@@ -11,9 +11,17 @@ class AppTest extends Specification {
         def app = new App()
 
         when:
-        def result = app.greeting
+        def expResult = app.greeting
 
         then:
-        result != null
+        expResult == "Hello World!"
+    }
+
+    def "simple test covering main class"() {
+        setup:
+        def app = new App()
+
+        and:
+        app.main() == "Hello World!"
     }
 }
