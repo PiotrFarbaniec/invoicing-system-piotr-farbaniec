@@ -12,5 +12,5 @@ public class Invoice {
   private LocalDate date;
   private Company buyer;
   private Company seller;
-
+  private InvoiceEntry invoiceEntry;
 }

@@ -29,8 +29,6 @@ public class InMemoryDatabase implements Database {
   public void update(int id, Invoice updateInvoice) {
     if (invoices.containsKey(id)) {
       invoices.put(id, updateInvoice);
-    } else {
-      throw new IllegalArgumentException("Wrong value of Invoice id provided");
     }
   }
 
@@ -38,8 +36,6 @@ public class InMemoryDatabase implements Database {
   public void delete(int id) {
     if (invoices.containsKey(id)) {
       invoices.remove(id);
-    } else {
-      throw new IllegalArgumentException("There's no such Invoice to remove (incorrect id)");
     }
   }
 
