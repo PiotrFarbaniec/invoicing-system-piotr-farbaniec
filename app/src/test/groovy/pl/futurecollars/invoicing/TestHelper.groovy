@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.service
+package pl.futurecollars.invoicing
 
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice

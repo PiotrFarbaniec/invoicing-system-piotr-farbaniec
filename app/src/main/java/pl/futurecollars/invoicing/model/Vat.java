@@ -1,8 +1,10 @@
 package pl.futurecollars.invoicing.model;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public enum Vat {
 
   VAT_23(23),

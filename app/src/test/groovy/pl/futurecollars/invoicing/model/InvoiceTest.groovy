@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.model
 
-import pl.futurecollars.invoicing.service.TestHelper
+import pl.futurecollars.invoicing.TestHelper
 import spock.lang.Specification
 
 import java.time.LocalDate

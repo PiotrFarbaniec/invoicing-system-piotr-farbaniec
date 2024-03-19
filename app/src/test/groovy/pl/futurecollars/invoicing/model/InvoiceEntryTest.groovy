@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.model
 
-import pl.futurecollars.invoicing.service.TestHelper
+import pl.futurecollars.invoicing.TestHelper
 import spock.lang.Specification
 
 class InvoiceEntryTest extends Specification {
@@ -56,68 +56,97 @@ class InvoiceEntryTest extends Specification {
         currentRate == expResult
     }
 
-    def "summary test for all methods available for InvoiceEntry"() {
+    def "When equal() called on same objects should return true"() {
+        given:
+        def entry = TestHelper.createInvoices()[0].getInvoiceEntry()
+
+        when:
+        entry.equals(entry)
+
+        then:
+        entry.hashCode() == (entry).hashCode()
+    }
+
+    def "When equal() called on different objects should return false"() {
         given:
         def entry1 = TestHelper.createInvoices()[0].getInvoiceEntry()
         def entry2 = TestHelper.createInvoices()[1].getInvoiceEntry()
         def entry3 = TestHelper.createInvoices()[2].getInvoiceEntry()
 
-        when: "When equal() called on objects return true"
-        entry1.equals(entry1)
-
-        then: "Then hashCode compare should return true"
-        entry1.hashCode() == (entry1).hashCode()
-
-        when: "When equal() called on objects return false"
+        when:
         !entry1.equals(entry2)
         !entry2.equals(entry3)
         !entry1.equals(entry3)
 
-        then: "Then hashCode compare should return false"
+        then:
         entry1.hashCode() != entry2.hashCode()
         entry2.hashCode() != entry3.hashCode()
         entry1.hashCode() != entry3.hashCode()
+    }
 
-        when: "If toString method give correct values"
+    def "toString method give correct values"() {
+        given:
+        def entry1 = TestHelper.createInvoices()[0].getInvoiceEntry()
+        def entry2 = TestHelper.createInvoices()[1].getInvoiceEntry()
+
+        when:
         def first = entry1.toString()
         def second = entry2.toString()
 
-        then: "Then comparing also works correctly"
+        then:
         first == first
         first != second
-
-        when: "setDescription called should modify description"
-        def description = "New description"
-        entry1.setDescription(description)
-
-        then: "getDescription should get modified object"
-        entry1.getDescription() == description
-
-        when: "setPrice called should modify price"
-        def price = BigDecimal.valueOf(5000)
-        entry2.setPrice(price)
-
-        then: "getPrice should get modified price"
-        price == entry2.getPrice()
-        price.toString() == (entry2.getPrice().toString())
-
-        when: "setVatValue called should modify Vat value"
-        def vatValue = BigDecimal.valueOf(640)
-        entry2.setVatValue(vatValue)
-
-        then: "getVatValue called should get modified Vat value"
-        vatValue == entry2.getVatValue()
-        vatValue.toString() == (entry2.getVatValue().toString())
-
-        when: "setVatRate called should modify Vat rate"
-        def vatRate = Vat.VAT_0
-        entry3.setVatRate(vatRate)
-
-        then: "getVatRate called should get modified Vat rate"
-        vatRate == entry3.getVatRate()
-        vatRate.getRate() == entry3.getVatRate().getRate()
-        vatRate.toString() == entry3.getVatRate().toString()
     }
 
+    def "setDescription called should modify description"() {
+        given:
+        def entry = TestHelper.createInvoices()[0].getInvoiceEntry()
 
+        when:
+        def description = "New description"
+        entry.setDescription(description)
+
+        then:
+        entry.getDescription() == description
+    }
+
+    def "setPrice called should modify price"() {
+        given:
+        def entry = TestHelper.createInvoices()[1].getInvoiceEntry()
+
+        when:
+        def price = BigDecimal.valueOf(5000)
+        entry.setPrice(price)
+
+        then:
+        price == entry.getPrice()
+        price.toString() == (entry.getPrice().toString())
+    }
+
+    def "setVatValue called should modify Vat value"() {
+        given:
+        def entry = TestHelper.createInvoices()[1].getInvoiceEntry()
+
+        when:
+        def vatValue = BigDecimal.valueOf(640)
+        entry.setVatValue(vatValue)
+
+        then:
+        vatValue == entry.getVatValue()
+        vatValue.toString() == (entry.getVatValue().toString())
+    }
+
+    def "setVatRate called should modify Vat rate"() {
+        given:
+        def entry = TestHelper.createInvoices()[2].getInvoiceEntry()
+
+        when:
+        def vatRate = Vat.VAT_0
+        entry.setVatRate(vatRate)
+
+        then:
+        vatRate == entry.getVatRate()
+        vatRate.getRate() == entry.getVatRate().getRate()
+        vatRate.toString() == entry.getVatRate().toString()
+    }
 }

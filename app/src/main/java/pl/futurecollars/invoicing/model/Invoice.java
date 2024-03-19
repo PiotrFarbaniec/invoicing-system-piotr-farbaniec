@@ -1,11 +1,9 @@
 package pl.futurecollars.invoicing.model;
 
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class Invoice {
 
   private int id;
@@ -13,4 +11,12 @@ public class Invoice {
   private Company buyer;
   private Company seller;
   private InvoiceEntry invoiceEntry;
+
+  public Invoice(int id, LocalDate date, Company buyer, Company seller, InvoiceEntry invoiceEntry) {
+    this.id = id;
+    this.date = date;
+    this.buyer = buyer;
+    this.seller = seller;
+    this.invoiceEntry = invoiceEntry;
+  }
 }

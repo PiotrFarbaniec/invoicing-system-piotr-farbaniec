@@ -1,14 +1,14 @@
 package pl.futurecollars.invoicing.service
 
+import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
 class InvoiceServiceTest extends Specification {
 
     def database = Mock(Database)
     def service = new InvoiceService(database)
-    def invoice = TestHelper.createInvoices()[0]
+//    def invoice = TestHelper.createInvoices()[0]
 
     def "should save given invoice"() {
         given:

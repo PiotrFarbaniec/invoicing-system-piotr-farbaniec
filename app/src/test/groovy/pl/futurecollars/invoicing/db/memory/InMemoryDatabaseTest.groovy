@@ -1,7 +1,7 @@
 package pl.futurecollars.invoicing.db.memory
 
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.service.TestHelper
+import pl.futurecollars.invoicing.TestHelper
 import spock.lang.Specification
 
 class InMemoryDatabaseTest extends Specification {
@@ -53,18 +53,19 @@ class InMemoryDatabaseTest extends Specification {
         assert database.getById(2).get() == updatedInvoice
     }
 
-    /*def "update() should thrown an exception for modify non existing invoice"() {
+    def "When no such invoice update() should terminate without action"() {
         given:
         database.save(invoice1)
+        database.save(invoice2)
 
         when:
         Invoice updatedInvoice = invoice3
         database.update(3, updatedInvoice)
 
         then:
-        IllegalArgumentException e = thrown()
-        e.getMessage() == "Wrong value of Invoice id provided"
-    }*/
+        assert database.getById(3).isEmpty()
+        assert database.getAll().size() == 2
+    }
 
     def "delete() called should remove invoice if exisits"() {
         given:
@@ -83,17 +84,19 @@ class InMemoryDatabaseTest extends Specification {
         invoiceList.containsAll([invoice1, invoice3])
     }
 
-    /*def "delete() should thrown an exception for remove non existing invoice"() {
+    def "When no such invoice delete() should terminate without action"() {
         given:
         database.save(invoice1)
+        database.save(invoice2)
+        def before = database.getAll()
 
         when:
         database.delete(3)
+        def after = database.getAll()
 
         then:
-        IllegalArgumentException e = thrown()
-        e.getMessage() == "There's no such Invoice to remove (incorrect id)"
-    }*/
+        before == after
+    }
 
     def "when getAll() called should return list of all invoices"() {
         given:

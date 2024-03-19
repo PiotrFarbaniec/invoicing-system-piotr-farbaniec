@@ -1,10 +1,12 @@
 package pl.futurecollars.invoicing.service
 
+import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
 class InvoiceServiceIntegrationTest extends Specification{
+
     def "all methods should be compatible with InvoiceService class"() {
         given: "An instance of InvoiceService with InMemoryDatabase"
         InMemoryDatabase memoryDatabase = new InMemoryDatabase()
