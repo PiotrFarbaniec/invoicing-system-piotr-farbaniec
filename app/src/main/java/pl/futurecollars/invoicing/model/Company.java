@@ -9,6 +9,9 @@ public class Company {
   private String address;
   private String name;
 
+  public Company() {
+  }
+
   public Company(String taxIdentifications, String address, String name) {
     this.taxIdentifications = taxIdentifications;
     this.address = address;

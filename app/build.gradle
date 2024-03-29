@@ -31,6 +31,8 @@ dependencies {
     testImplementation 'org.spockframework:spock-core:2.2-groovy-3.0'
     testImplementation 'junit:junit:4.13.2'
 
+
+
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.1-jre'
 
@@ -39,6 +41,23 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    // This dependency is used by the Jackson application.
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
+//    implementation 'com.fasterxml.jackson.datatype:jackson-dataformat-yaml:2.11.1'
+
+    // Mock dependencies
+//    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+//    testImplementation 'net.bytebuddy:byte-buddy:1.11.22'
+
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+    testImplementation 'cglib:cglib-nodep:3.3.0'
 }
 
 application {

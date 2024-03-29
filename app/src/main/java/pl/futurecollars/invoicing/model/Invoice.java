@@ -12,6 +12,9 @@ public class Invoice {
   private Company seller;
   private InvoiceEntry invoiceEntry;
 
+  public Invoice() {
+  }
+
   public Invoice(int id, LocalDate date, Company buyer, Company seller, InvoiceEntry invoiceEntry) {
     this.id = id;
     this.date = date;

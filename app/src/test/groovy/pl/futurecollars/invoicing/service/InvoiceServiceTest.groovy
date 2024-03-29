@@ -2,13 +2,13 @@ package pl.futurecollars.invoicing.service
 
 import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.db.Database
+import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
 class InvoiceServiceTest extends Specification {
 
     def database = Mock(Database)
     def service = new InvoiceService(database)
-//    def invoice = TestHelper.createInvoices()[0]
 
     def "should save given invoice"() {
         given:
@@ -23,7 +23,6 @@ class InvoiceServiceTest extends Specification {
 
     def "should get invoice by given id"() {
         given:
-        //def id = 1
         def invoice = TestHelper.createInvoices()[0]
         service.save(invoice)
 
@@ -58,7 +57,7 @@ class InvoiceServiceTest extends Specification {
         1 * database.update(invoice.id, newInvoice)
     }
 
-    /*def "should throw an exception if updated invoice not exists"() {
+    def "should throw an exception if updated invoice not exists"() {
         given:
         def id = 2
         def updateInvoice = TestHelper.createInvoices()[1]
@@ -69,7 +68,7 @@ class InvoiceServiceTest extends Specification {
         then:
         thrown(Exception)
         1 * database.update(id, updateInvoice) >> {throw new Exception()}
-    }*/
+    }
 
 
     def "should delete an invoice if present"() {
@@ -86,7 +85,7 @@ class InvoiceServiceTest extends Specification {
         1 * database.delete(id)
     }
 
-/*    def "should throw an exception if deleted invoice not exists"() {
+    def "should throw an exception if deleted invoice not exists"() {
         given:
         def id = 1
         Invoice invoice = TestHelper.createInvoices()[0]
@@ -98,5 +97,5 @@ class InvoiceServiceTest extends Specification {
         then:
         thrown(Exception)
         1 * database.delete(id) >> {throw new Exception()}
-    }*/
+    }
 }
