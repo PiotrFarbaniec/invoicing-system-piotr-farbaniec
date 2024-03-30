@@ -33,6 +33,16 @@ class FileBasedDatabaseTest extends Specification {
         Files.deleteIfExists(Path.of("[INVOICE_TEST.txt]_BACKUP.txt"))
     }
 
+    def "toString() should return String value of file paths"() {
+        when:
+        def invoiceFilePath = invoicePath.toString()
+        def idFilePath = idPath.toString()
+
+        then:
+        invoiceFilePath == "INVOICE_TEST.txt"
+        idFilePath == "ID_TEST.txt"
+    }
+
     def "save() method called should successfully save an invoices in file"() {
         setup:
         Files.createFile(invoicePath)
@@ -62,6 +72,19 @@ class FileBasedDatabaseTest extends Specification {
         cleanup:
         Files.deleteIfExists(invoicePath)
         Files.deleteIfExists(idPath)
+    }
+
+    def "save() should create a new file while saving if not exists"() {
+        when:
+        !invoicePath.toFile().exists()
+        fileDatabase.save(invoice1)
+
+        then:
+        invoicePath.toFile().exists()
+        fileDatabase.getAll().size() == 1
+
+        cleanup:
+        Files.deleteIfExists(invoicePath)
     }
 
     def "getByID() called should throw an exception when file not exists"() {
@@ -268,4 +291,25 @@ class FileBasedDatabaseTest extends Specification {
         Files.deleteIfExists(idPath)
     }
 
+    def "toObject() should throw an exception in case of wrong data"() {
+        given:
+        def invalidData = "{ invalid: json }"
+
+        when:
+        jsonService.toObject(invalidData, Invoice.class)
+
+        then:
+        thrown(RuntimeException.class)
+    }
+
+    def "toJson() should throw an exception in case of wrong object"() {
+        given:
+        def invalidObject = new JsonService()
+
+        when:
+        jsonService.toJson(invalidObject)
+
+        then:
+        thrown(RuntimeException.class)
+    }
 }

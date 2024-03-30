@@ -32,9 +32,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 
 
-
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.guava:guava:33.0.0-jre'
 
     implementation 'org.projectlombok:lombok:1.18.22'
     compileOnly 'org.projectlombok:lombok:1.18.22'
@@ -47,17 +46,15 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
-
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
-//    implementation 'com.fasterxml.jackson.datatype:jackson-dataformat-yaml:2.11.1'
+//    implementation 'com.fasterxml.jackson.datatype:jackson-dataformat-yaml:2.11.1'  // old broken
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.8.4'     // new
 
     // Mock dependencies
-//    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
-//    testImplementation 'net.bytebuddy:byte-buddy:1.11.22'
-
     testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
-    testImplementation 'cglib:cglib-nodep:3.3.0'
+    testImplementation 'net.bytebuddy:byte-buddy:1.11.22'
+
+//    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+//    testImplementation 'cglib:cglib-nodep:3.3.0'
 }
 
 application {
@@ -108,7 +105,6 @@ jacocoTestCoverageVerification {
                 maximum = 1.00
             }
         }
-
         rule {
             limit {
                 counter = 'LINE'
