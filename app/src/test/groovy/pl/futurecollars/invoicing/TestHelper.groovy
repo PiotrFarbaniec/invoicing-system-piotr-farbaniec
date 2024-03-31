@@ -10,14 +10,14 @@ import java.time.LocalDate
 class TestHelper {
     static Invoice[] createInvoices() {
         def buyer = [
-                new Company("423-456-78-90", "30-210 Kraków, ul.Kwiatowa 30", "COMPLEX"),
+                new Company("423-456-78-90", "30-210 Krakow, ul.Kwiatowa 30", "COMPLEX"),
                 new Company("106-008-18-19", "62-500 Konin, ul.Akacjowa 2/15", "Digiwave"),
-                new Company("689-456-56-65", "22-455 Czartoria, ul.Powstańców 102", "Pixelux")
+                new Company("689-456-56-65", "22-455 Czartoria, ul.Powstancow 102", "Pixelux")
         ]
         def seller = [
-                new Company("538-321-55-32", "04-413 Warszawa, ul.Górna 5", "GLOBAL SOLUTIONS"),
-                new Company("458-116-52-51", "62-730 Czajków, ul.Polna 56", "Infotech"),
-                new Company("987-743-21-08", "61-324 Poznań, ul.Wincentego Witosa 18", "Energon")
+                new Company("538-321-55-32", "04-413 Warszawa, ul.Gorna 5", "GLOBAL SOLUTIONS"),
+                new Company("458-116-52-51", "62-730 Czajkow, ul.Polna 56", "Infotech"),
+                new Company("987-743-21-08", "61-324 Poznan, ul.Wincentego Witosa 18", "Energon")
         ]
         def invoiceEntry = [
                 new InvoiceEntry("Invoice description No1", BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23),

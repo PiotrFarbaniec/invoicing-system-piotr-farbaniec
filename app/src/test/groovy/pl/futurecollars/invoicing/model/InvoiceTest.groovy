@@ -70,6 +70,4 @@ class InvoiceTest extends Specification {
         !oldSeller.equals(expResult)
 
     }
-
-
 }
