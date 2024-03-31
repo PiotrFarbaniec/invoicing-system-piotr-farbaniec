@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileManager;
@@ -75,7 +76,7 @@ public class FileBasedDatabase implements Database {
     try {
       return fileService.readAllLines(invoicePath).stream()
           .map(line -> jsonService.toObject(line, Invoice.class))
-          .toList();
+          .collect(Collectors.toList());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -95,7 +96,7 @@ public class FileBasedDatabase implements Database {
           updatedLines.add(line);
         }
       }
-      Files.write(invoicePath, updatedLines);
+      fileService.writeLinesToFile(invoicePath, updatedLines);
     } catch (IOException e) {
       throw new RuntimeException("Invoice updating fail", e);
     }
