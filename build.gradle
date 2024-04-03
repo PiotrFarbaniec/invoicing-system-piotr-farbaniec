@@ -22,19 +22,6 @@ plugins {
     id 'io.spring.dependency-management' version'1.0.11.RELEASE'
 }
 
-group = 'pl.futurecollars.invoicing'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    sourceCompatibility = '14'
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -71,12 +58,6 @@ dependencies {
     //Spring framework
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation 'org.springframework.boot:spring-boot-starter-web-services'
-    implementation 'org.springframework.session:spring-session-core'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 application {
