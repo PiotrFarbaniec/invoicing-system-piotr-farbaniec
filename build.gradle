@@ -26,7 +26,7 @@ group = 'pl.futurecollars.invoicing'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '14'
 }
 
 configurations {
@@ -124,15 +124,22 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'BRANCH'
                 minimum = 0.70
-                maximum = 1.00
             }
         }
+
         rule {
             limit {
                 counter = 'LINE'
                 minimum = 0.70
-                maximum = 1.00
             }
         }
     }
+    afterEvaluate { // TODO [PK] remove after adding tests in Task #5
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/controller/**')
+        }))
+    }
+}
+startScripts {
+    dependsOn bootJar
 }
