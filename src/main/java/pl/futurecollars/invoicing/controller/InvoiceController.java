@@ -2,6 +2,7 @@ package pl.futurecollars.invoicing.controller;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.futurecollars.invoicing.db.memory.InMemoryDatabase;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.service.InvoiceService;
 
@@ -20,11 +20,21 @@ import pl.futurecollars.invoicing.service.InvoiceService;
 @RequestMapping("/invoices")
 public class InvoiceController {
 
-  private final InvoiceService service = new InvoiceService(new InMemoryDatabase());
+  private final InvoiceService service;
+
+  @Autowired
+  public InvoiceController(InvoiceService service) {
+    this.service = service;
+  }
 
   @GetMapping("/get/all")
-  public List<Invoice> getAll() {
-    return service.getAll();
+  public ResponseEntity<?> getAllInvoices() {
+    List<Invoice> invoicesList = service.getAll();
+    if (invoicesList == null || invoicesList.size() == 0) {
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } else {
+      return new ResponseEntity<>(invoicesList, HttpStatus.OK);
+    }
   }
 
   @GetMapping("/get/{id}")

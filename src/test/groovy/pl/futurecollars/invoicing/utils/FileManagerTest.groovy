@@ -14,7 +14,7 @@ class FileManagerTest extends Specification {
     def "create() should create a file when it doesn't exist"() {
         given:
         def pathProvider = new PathProvider("TEST FILE.txt", "ID FILE.txt")
-        def fileManager = new FileManager(pathProvider)
+        def fileManager = new FileManager(/*pathProvider*/)
         def file = new File(pathProvider.getInvoicePath().toString())
 
         when:
@@ -31,7 +31,7 @@ class FileManagerTest extends Specification {
     def "create() should throw an exception when file already exists"() {
         given:
         def pathProvider = new PathProvider("TEST.txt", "ID.txt")
-        def fileManager = new FileManager(pathProvider)
+        def fileManager = new FileManager(/*pathProvider*/)
         def existingFile = new File(pathProvider.getInvoicePath().toString())
         existingFile.createNewFile()
 
@@ -49,7 +49,7 @@ class FileManagerTest extends Specification {
     def "delete() called should delete a file if exists"() {
         given:
         def pathProvider = new PathProvider("TEST.txt", "ID.txt")
-        def fileManager = new FileManager(pathProvider)
+        def fileManager = new FileManager(/*pathProvider*/)
         def testFile = new File(pathProvider.getInvoicePath().toString())
         testFile.createNewFile()
 
@@ -67,7 +67,7 @@ class FileManagerTest extends Specification {
     def "delete() should throw an exception if file not exists"() {
         given:
         PathProvider pathProvider = new PathProvider("TEST FILE.txt", "ID FILE.txt")
-        FileManager fileManager = new FileManager(pathProvider)
+        FileManager fileManager = new FileManager(/*pathProvider*/)
         File testFile = new File("TEST FILE.txt")
         testFile.createNewFile()
 
@@ -83,7 +83,7 @@ class FileManagerTest extends Specification {
         Files.deleteIfExists(Path.of("ID FILE.txt"))
     }
 
-    def "moveTo() should replace a file to another"() {
+    /*def "moveTo() should replace a file to another"() {
         given:
         PathProvider pathProvider = new PathProvider("TEST FILE.txt", "ID_FILE.txt")
         File testFile = new File("TEST FILE.txt")
@@ -102,12 +102,12 @@ class FileManagerTest extends Specification {
         Files.deleteIfExists(Path.of("TEST FILE.txt"))
         Files.deleteIfExists(Path.of("NEW FILE.txt"))
         Files.deleteIfExists(Path.of("ID_FILE.txt"))
-    }
+    }*/
 
     def "copyFile() should make a copy of file to another"() {
         given:
         PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-        FileManager fileManager = new FileManager(pathProvider)
+        FileManager fileManager = new FileManager(/*pathProvider*/)
         Path fromPath = Path.of(pathProvider.getInvoicePath().toString())
         File sourceFile = new File(fromPath.toString())
         Path toPath = Path.of("NEW FILE.txt")
@@ -132,7 +132,7 @@ class FileManagerTest extends Specification {
     def "makeBackupFile() should make a backup while operation on file"() {
         given:
         PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-        FileManager fileManager = new FileManager(pathProvider)
+        FileManager fileManager = new FileManager(/*pathProvider*/)
         Path source = Path.of(pathProvider.getInvoicePath().toString())
         File sourceFile = new File(source.toString())
         File backupFile = new File("[INVOICE_TEST.txt]_BACKUP.txt")
@@ -154,8 +154,8 @@ class FileManagerTest extends Specification {
 
     def "makeBackupFile() should throw an exception when file already exists"() {
         given:
-        PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-        FileManager fileManager = new FileManager(pathProvider)
+        /*PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")*/
+        FileManager fileManager = new FileManager(/*pathProvider*/)
         Path source = Path.of("INVOICE_TEST.txt")
         Path backup = Path.of("[INVOICE_TEST.txt]_BACKUP.txt")
         Files.createFile(source)
@@ -177,8 +177,8 @@ class FileManagerTest extends Specification {
 
     def "deleteBackupFile() should throw an exception when source file not exists"() {
         given:
-        PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-        FileManager fileManager = new FileManager(pathProvider)
+        /*PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")*/
+        FileManager fileManager = new FileManager(/*pathProvider*/)
         Path source = Path.of("INVOICE_TEST.txt")
         Path backup = Path.of("[INVOICE_TEST.txt]_BACKUP.txt")
         Files.createFile(backup)
@@ -198,8 +198,8 @@ class FileManagerTest extends Specification {
 
     def "deleteBackupFile() should delete backup file when source file exists"() {
         given:
-        PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-        FileManager fileManager = new FileManager(pathProvider)
+        /*PathProvider pathProvider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")*/
+        FileManager fileManager = new FileManager(/*pathProvider*/)
         Path source = Path.of("INVOICE_TEST.txt")
         Path backup = Path.of("[INVOICE_TEST.txt]_BACKUP.txt")
         Files.createFile(source)

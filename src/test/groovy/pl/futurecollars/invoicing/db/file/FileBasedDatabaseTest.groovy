@@ -13,7 +13,7 @@ import java.nio.file.Path
 class FileBasedDatabaseTest extends Specification {
 
     def provider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-    def manager = new FileManager(provider)
+    def manager = new FileManager(/*provider*/)
     def fileService = new FileService()
     def jsonService = new JsonService()
     def idService = new IdService(fileService, jsonService, provider)
