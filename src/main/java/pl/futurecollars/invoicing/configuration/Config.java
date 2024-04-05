@@ -1,5 +1,8 @@
 package pl.futurecollars.invoicing.configuration;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.futurecollars.invoicing.db.file.FileBasedDatabase;
@@ -16,27 +19,37 @@ public class Config {
   public static final String INVOICES_FILE_NAME = "invoicesRecord.txt";
 
   @Bean
-  public PathProvider pathProvider() {
+  public PathProvider pathProviderBean() {
     return new PathProvider(INVOICES_FILE_NAME, ID_FILENAME);
   }
 
   @Bean
-  public IdService idService(FileService fileService, JsonService jsonService, PathProvider provider) {
+  public Path idFilePath() throws IOException {
+    return Files.createTempFile(DATABASE_LOCATION, ID_FILENAME); // potrzebny ???
+  }
+
+  @Bean
+  public Path invoiceFilePath() throws IOException {
+    return Files.createTempFile(DATABASE_LOCATION, INVOICES_FILE_NAME); // potrzebny ???
+  }
+
+  @Bean
+  public IdService idServiceBean(FileService fileService, JsonService jsonService, PathProvider provider) {
     return new IdService(fileService, jsonService, provider);
   }
 
-  /*@Bean
-  public FileService fileService() {
-    return new FileService();
-  }*/
-
   @Bean
-  public FileManager fileManager() {
-    return new FileManager();
+  public FileService fileServiceBean() {
+    return new FileService();
   }
 
+  /*  @Bean
+  public FileManager fileManagerBean() {
+    return new FileManager();
+  } */
+
   @Bean
-  public FileBasedDatabase fileBasedDatabase(FileManager fileManager, FileService fileService,
+  public FileBasedDatabase fileDatabase(FileManager fileManager, FileService fileService,
                                              JsonService jsonService, IdService idService,
                                              PathProvider provider) {
     return new FileBasedDatabase(fileManager, fileService, jsonService, idService, provider);

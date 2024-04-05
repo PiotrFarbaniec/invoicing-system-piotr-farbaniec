@@ -28,47 +28,50 @@ public class InvoiceController {
   }
 
   @GetMapping("/get/all")
-  public ResponseEntity<?> getAllInvoices() {
+  public ResponseEntity<List<Invoice>> getAllInvoices() {
     List<Invoice> invoicesList = service.getAll();
-    if (invoicesList == null || invoicesList.size() == 0) {
+    if (invoicesList == null || invoicesList.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } else {
-      return new ResponseEntity<>(invoicesList, HttpStatus.OK);
+      return ResponseEntity.status(HttpStatus.OK).body(invoicesList);
     }
   }
 
   @GetMapping("/get/{id}")
-  public ResponseEntity<Invoice> getById(@PathVariable int id) {
-    return service.getById(id)
-        .map(invoice -> new ResponseEntity<Invoice>(invoice, HttpStatus.FOUND))
-        .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+  public ResponseEntity<Invoice> getInvoiceById(@PathVariable int id) {
+    Optional<Invoice> invoice = service.getById(id);
+    if (invoice.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } else {
+      return ResponseEntity.status(HttpStatus.OK).body(invoice.get());
+    }
   }
 
   @PostMapping("/add/")
-  public ResponseEntity<Integer> saveInvoice(@RequestBody Invoice invoice) {
+  public ResponseEntity<String> saveInvoice(@RequestBody Invoice invoice) {
     Integer added = service.save(invoice);
-    return new ResponseEntity<Integer>(added, HttpStatus.CREATED);
+    return ResponseEntity.status(HttpStatus.CREATED).body("Invoice with ID: " + added + " has been successfully saved");
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateInvoice(@PathVariable int id, @RequestBody Invoice updatedInvoice) {
+  public ResponseEntity<String> updateInvoice(@PathVariable int id, @RequestBody Invoice updatedInvoice) {
     Optional<Invoice> invoice = service.getById(id);
     if (invoice.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } else {
       service.update(id, updatedInvoice);
-      return ResponseEntity.status(HttpStatus.OK).body(invoice.get());
+      return ResponseEntity.status(HttpStatus.OK).body("Invoice with ID: " + id + " has been successfully updated");
     }
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteInvoice(@PathVariable int id) {
+  public ResponseEntity<String> deleteInvoice(@PathVariable int id) {
     Optional<Invoice> invoice = service.getById(id);
     if (invoice.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } else {
       service.delete(id);
-      return ResponseEntity.status(HttpStatus.OK).build();
+      return ResponseEntity.status(HttpStatus.OK).body("Invoice with ID: " + id + " has been successfully removed");
     }
   }
 }
