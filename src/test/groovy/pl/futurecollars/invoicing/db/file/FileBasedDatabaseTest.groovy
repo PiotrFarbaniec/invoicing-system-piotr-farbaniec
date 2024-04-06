@@ -12,15 +12,14 @@ import java.nio.file.Path
 
 class FileBasedDatabaseTest extends Specification {
 
-    def provider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-    def manager = new FileManager(/*provider*/)
+    Path idPath = Path.of("ID_TEST.txt")
+    Path invoicePath = Path.of("INVOICE_TEST.txt")
+    def manager = new FileManager()
     def fileService = new FileService()
     def jsonService = new JsonService()
-    def idService = new IdService(fileService, jsonService, provider)
-    Path idPath = provider.idPath
-    Path invoicePath = provider.invoicePath
+    def idService = new IdService(fileService, idPath)
 
-    FileBasedDatabase fileDatabase = new FileBasedDatabase (manager, fileService, jsonService, idService, provider)
+    FileBasedDatabase fileDatabase = new FileBasedDatabase (manager, fileService, jsonService, idService, invoicePath)
 
     Invoice invoice1 = TestHelper.createInvoices()[0]
     Invoice invoice2 = TestHelper.createInvoices()[1]
@@ -53,21 +52,21 @@ class FileBasedDatabaseTest extends Specification {
 
         then:
         fileDatabase.getAll().size() == 1
-        nextId1 == 2
+        nextId1 == 1
 
         when:
         def nextId2 = fileDatabase.save(invoice2)
 
         then:
         fileDatabase.getAll().size() == 2
-        nextId2 == 3
+        nextId2 == 2
 
         when:
         def nextId3 = fileDatabase.save(invoice3)
 
         then:
         fileDatabase.getAll().size() == 3
-        nextId3 == 4
+        nextId3 == 3
 
         cleanup:
         Files.deleteIfExists(invoicePath)
@@ -304,7 +303,7 @@ class FileBasedDatabaseTest extends Specification {
 
     def "toJson() should throw an exception in case of wrong object"() {
         given:
-        def invalidObject = new JsonService()
+        def invalidObject = new Object()
 
         when:
         jsonService.toJson(invalidObject)

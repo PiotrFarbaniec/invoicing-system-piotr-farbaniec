@@ -40,16 +40,13 @@ public class InvoiceController {
   @GetMapping("/get/{id}")
   public ResponseEntity<Invoice> getInvoiceById(@PathVariable int id) {
     Optional<Invoice> invoice = service.getById(id);
-    if (invoice.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    } else {
-      return ResponseEntity.status(HttpStatus.OK).body(invoice.get());
-    }
+    return invoice.map(value -> ResponseEntity.status(HttpStatus.OK).body(value))
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
   }
 
   @PostMapping("/add/")
   public ResponseEntity<String> saveInvoice(@RequestBody Invoice invoice) {
-    Integer added = service.save(invoice);
+    int added = service.save(invoice);
     return ResponseEntity.status(HttpStatus.CREATED).body("Invoice with ID: " + added + " has been successfully saved");
   }
 

@@ -11,14 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Data
 @Service
-public class FileManager {  //////////
+public class FileManager {
 
-  /* private File file;
-  private final PathProvider pathProvider; */
-
-  public FileManager(/* PathProvider pathProvider */) {
-    /* this.pathProvider = pathProvider;
-    this.file = new File(String.valueOf(pathProvider.getInvoicePath())); */
+  public FileManager() {
   }
 
   public void createFile(File file) throws IOException {
@@ -39,11 +34,6 @@ public class FileManager {  //////////
     }
   }
 
-  /* public void moveTo(Path newFile) throws IOException {
-    Files.move(this.file.toPath(), newFile, StandardCopyOption.REPLACE_EXISTING);
-    Files.deleteIfExists(this.file.toPath());
-  } */
-
   public void copyFile(Path fromFilePath, Path toFilePath) throws IOException {
     Files.copy(fromFilePath, toFilePath, StandardCopyOption.REPLACE_EXISTING);
   }
@@ -60,7 +50,7 @@ public class FileManager {  //////////
     }
   }
 
-  public void deleteBackupOfFile(Path sourcePath) {
+  public void deleteBackupFile(Path sourcePath) {
     File tempFile = new File(sourcePath.toFile().getParent(), String.format("[%s]_BACKUP.txt", sourcePath.getFileName()));
     try {
       validateFileExistance(sourcePath.toFile(), "Source file does not exist. Backup file has been saved");

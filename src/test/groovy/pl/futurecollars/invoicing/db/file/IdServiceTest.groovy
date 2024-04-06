@@ -9,15 +9,11 @@ import java.nio.file.Path
 
 class IdServiceTest extends Specification {
 
-    def provider = new PathProvider("INVOICE_TEST.txt", "ID_TEST.txt")
-    def fileService = new FileService()
-    def jsonService = new JsonService()
-    def idService = new IdService(fileService, jsonService, provider)
-    Path idPath = provider.idPath
-    Path invoicePath = provider.invoicePath
+    FileService fileService = Mock(FileService)
+    Path idPath = Path.of("ID_TEST.txt")
+    IdService idService = new IdService(fileService, idPath)
 
-
-    def "getNextIdAndIncrement throw na exception when path to file is null"() {
+    def "getNextIdAndIncrement throw an exception when path to file is null"() {
         when:
         fileService.writeToFile(null, "invoice1")
         idService.getNextIdAndIncrement()
@@ -26,21 +22,49 @@ class IdServiceTest extends Specification {
         thrown(RuntimeException.class)
 
         cleanup:
-        Files.deleteIfExists(invoicePath)
         Files.deleteIfExists(idPath)
     }
 
     def "getNextIdAndIncrement throw na exception when content is null"() {
         when:
-        fileService.writeToFile(invoicePath, null)
+        fileService.writeToFile(idPath, null)
         idService.getNextIdAndIncrement()
 
         then:
         thrown(RuntimeException.class)
 
         cleanup:
-        Files.deleteIfExists(invoicePath)
         Files.deleteIfExists(idPath)
     }
 
+    def "should throw an exception when path to file is null"() {
+        setup:
+        IdService idService = new IdService(fileService, null)
+
+        when:
+        idService.getNextIdAndIncrement()
+        fileService.readAllLines(idPath)
+        /*fileService.writeToFile(null, "invoice1")*/
+
+        then:
+        thrown(RuntimeException.class)
+
+        cleanup:
+        Files.deleteIfExists(idPath)
+    }
+
+    def "should return next ID when file read and write succeed"() {
+        given:
+        fileService.readAllLines(idPath) >> ["42"]
+        fileService.writeToFile(idPath, "43")
+
+        when:
+        def result = idService.getNextIdAndIncrement()
+
+        then:
+        result == 42
+
+        cleanup:
+        Files.deleteIfExists(idPath)
+    }
 }

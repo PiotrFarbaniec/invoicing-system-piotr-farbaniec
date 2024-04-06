@@ -26,34 +26,32 @@ public class FileBasedDatabase implements Database {
   private final FileService fileService;
   private final JsonService jsonService;
   private final IdService idService;
-  private final PathProvider provider;
   private final Path invoicePath;
-  private final Path idPath;
 
   public FileBasedDatabase(FileManager manager, FileService fileService,
-                           JsonService jsonService, IdService idService, PathProvider provider) {
+                           JsonService jsonService, IdService idService,
+                           Path invoicePath) {
     this.manager = manager;
     this.fileService = fileService;
     this.jsonService = jsonService;
     this.idService = idService;
-    this.provider = provider;
-    this.invoicePath = provider.getInvoicePath();
-    this.idPath = provider.getIdPath();
+    this.invoicePath = invoicePath;
   }
 
   @Override
   public int save(Invoice invoice) {
     File invFile = new File(invoicePath.toString());
+    int nextId = idService.getNextIdAndIncrement();
     try {
       if (!invFile.exists()) {
         invFile.createNewFile();
       }
-      invoice.setId(idService.getNextIdAndIncrement());
+      invoice.setId(nextId /* idService.getNextIdAndIncrement() */);
       fileService.appendLineToFile(invoicePath, jsonService.toJson(invoice));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return idService.getNextIdAndIncrement();
+    return nextId /* idService.getNextIdAndIncrement() */;
   }
 
   @Override
@@ -101,7 +99,7 @@ public class FileBasedDatabase implements Database {
     } catch (IOException e) {
       throw new RuntimeException("Invoice updating fail", e);
     }
-    manager.deleteBackupOfFile(invoicePath);
+    manager.deleteBackupFile(invoicePath);
   }
 
   @Override
@@ -119,7 +117,7 @@ public class FileBasedDatabase implements Database {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    manager.deleteBackupOfFile(invoicePath);
+    manager.deleteBackupFile(invoicePath);
   }
 
   private void saveInvoicesToFile(Collection<Invoice> invoices) throws IOException {
