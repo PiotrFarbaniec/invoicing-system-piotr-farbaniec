@@ -5,10 +5,14 @@ import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
+import java.nio.file.Path
+
 class InvoiceServiceTest extends Specification {
 
     def database = Mock(Database)
     def service = new InvoiceService(database)
+
+    private Path filePath = File.createTempFile("tempIdFile", ".txt").toPath();
 
     def "should save given invoice"() {
         given:
