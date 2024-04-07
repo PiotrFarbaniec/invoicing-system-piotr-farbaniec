@@ -20,14 +20,18 @@ public class Config {
 
   @Bean
   public IdService idServiceBean(FileService fileService) throws IOException {
-    Path idPath = Files.createTempFile(DATABASE_LOCATION, ID_FILENAME);
-    return new IdService(fileService, idPath);
+    Path idFilePath = Files.createTempFile(DATABASE_LOCATION, ID_FILENAME);
+    return new IdService(fileService, idFilePath);
   }
 
   @Bean
   public FileBasedDatabase fileDatabase(FileManager fileManager, FileService fileService,
-                                             JsonService jsonService, IdService idService) throws IOException {
-    Path dtabaseFilePath = Files.createTempFile(DATABASE_LOCATION, INVOICES_FILE_NAME);
-    return new FileBasedDatabase(fileManager, fileService, jsonService, idService, dtabaseFilePath);
+                                             JsonService jsonService) throws IOException {
+    return new FileBasedDatabase(fileManager, fileService, jsonService, idServiceBean(fileService), databaseFilePath());
+  }
+
+  @Bean
+  public Path databaseFilePath() throws IOException {
+    return Files.createTempFile(DATABASE_LOCATION, INVOICES_FILE_NAME);
   }
 }
