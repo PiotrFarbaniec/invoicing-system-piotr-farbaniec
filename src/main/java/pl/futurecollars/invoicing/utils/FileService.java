@@ -1,7 +1,5 @@
 package pl.futurecollars.invoicing.utils;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,29 +25,17 @@ public class FileService {
     Files.write(path, (line + System.lineSeparator()).getBytes(), StandardOpenOption.WRITE);
   }
 
-  public void writeLinesToFile(Path path, List<String> invoices) {
+  public void writeLinesToFile(Path path, List<String> invoices) throws IOException {
     ArgumentValidator.ensureArgumentNotNull(path, "path");
     ArgumentValidator.ensureArgumentNotNull(invoices, "invoices");
-    String fileName = String.valueOf(path.getFileName());
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, false))) {
-      for (String line : invoices) {
-        writer.write(line + System.lineSeparator());
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    Files.write(path, invoices, StandardOpenOption.TRUNCATE_EXISTING);
   }
 
-  public void appendLinesToFile(Path path, List<String> invoices) {
+  public void appendLinesToFile(Path path, List<String> invoices) throws IOException {
     ArgumentValidator.ensureArgumentNotNull(path, "path");
     ArgumentValidator.ensureArgumentNotNull(invoices, "invoices");
-    String fileName = String.valueOf(path.getFileName());
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
-      for (String line : invoices) {
-        writer.write(line + System.lineSeparator());
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    for (String line : invoices) {
+      Files.write(path, (line + System.lineSeparator()).getBytes(), StandardOpenOption.APPEND);
     }
   }
 

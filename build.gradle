@@ -32,7 +32,7 @@ dependencies {
     testImplementation 'org.codehaus.groovy:groovy:3.0.13'
 
     // Use the awesome Spock testing and specification framework even with Java
-    testImplementation 'org.spockframework:spock-core:2.2-groovy-3.0'
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
     testImplementation 'junit:junit:4.13.2'
 
 
@@ -58,6 +58,7 @@ dependencies {
     //Spring framework
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.spockframework:spock-spring:2.0-groovy-3.0'
 }
 
 application {

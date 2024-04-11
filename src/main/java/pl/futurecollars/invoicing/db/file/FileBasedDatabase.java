@@ -46,12 +46,12 @@ public class FileBasedDatabase implements Database {
       if (!invFile.exists()) {
         invFile.createNewFile();
       }
-      invoice.setId(nextId /* idService.getNextIdAndIncrement() */);
+      invoice.setId(nextId);
       fileService.appendLineToFile(invoicePath, jsonService.toJson(invoice));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return nextId /* idService.getNextIdAndIncrement() */;
+    return nextId;
   }
 
   @Override
