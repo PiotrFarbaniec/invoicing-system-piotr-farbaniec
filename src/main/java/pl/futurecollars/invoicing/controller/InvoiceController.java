@@ -20,6 +20,7 @@ import pl.futurecollars.invoicing.service.InvoiceService;
 @RequestMapping("/invoices")
 public class InvoiceController {
 
+  @Autowired
   private final InvoiceService service;
 
   @Autowired
@@ -27,7 +28,7 @@ public class InvoiceController {
     this.service = service;
   }
 
-  @GetMapping("/get/all")
+  @GetMapping(value = "/get/all", produces = "application/json;charset=UTF-8")
   public ResponseEntity<List<Invoice>> getAllInvoices() {
     List<Invoice> invoicesList = service.getAll();
     if (invoicesList == null || invoicesList.isEmpty()) {
@@ -37,20 +38,20 @@ public class InvoiceController {
     }
   }
 
-  @GetMapping("/get/{id}")
+  @GetMapping(value = "/get/{id}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<Invoice> getInvoiceById(@PathVariable int id) {
     Optional<Invoice> invoice = service.getById(id);
     return invoice.map(value -> ResponseEntity.status(HttpStatus.OK).body(value))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
   }
 
-  @PostMapping("/add/")
+  @PostMapping(value = "/add/", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> saveInvoice(@RequestBody Invoice invoice) {
     int added = service.save(invoice);
     return ResponseEntity.status(HttpStatus.CREATED).body("Invoice with ID: " + added + " has been successfully saved");
   }
 
-  @PutMapping("/{id}")
+  @PutMapping(value = "/update/{id}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> updateInvoice(@PathVariable int id, @RequestBody Invoice updatedInvoice) {
     Optional<Invoice> invoice = service.getById(id);
     if (invoice.isEmpty()) {
@@ -61,7 +62,7 @@ public class InvoiceController {
     }
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping(value = "/delete/{id}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> deleteInvoice(@PathVariable int id) {
     Optional<Invoice> invoice = service.getById(id);
     if (invoice.isEmpty()) {
