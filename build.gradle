@@ -6,6 +6,18 @@
  * User Manual available at https://docs.gradle.org/8.0/userguide/building_java_projects.html
  */
 
+buildscript {
+    ext {
+        groovyVersion = '3.0.13'
+        lombokVersion = '1.18.22'
+        jacksonVersion = '2.11.1'
+        junitVersion = '4.13.2'
+        spockVersion = '2.0-groovy-3.0'
+        byteBuddyVersion = '1.11.13'
+        guavaVersion = '31.1-jre'
+    }
+}
+
 plugins {
     // Apply the groovy plugin to also add support for Groovy (needed for Spock)
     id 'groovy'
@@ -29,36 +41,43 @@ repositories {
 
 dependencies {
     // Use the latest Groovy version for Spock testing
-    testImplementation 'org.codehaus.groovy:groovy:3.0.13'
+    testImplementation "org.codehaus.groovy:groovy:${groovyVersion}"
 
     // Use the awesome Spock testing and specification framework even with Java
-    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.spockframework:spock-core:${spockVersion}"
+    testImplementation "junit:junit:${junitVersion}"
 
 
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation "com.google.guava:guava:${guavaVersion}"
 
-    implementation 'org.projectlombok:lombok:1.18.22'
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-    testCompileOnly 'org.projectlombok:lombok:1.18.22'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     // This dependency is used by the Jackson application.
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
     // Mock dependencies
-    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
-    testImplementation 'net.bytebuddy:byte-buddy:1.11.13'
+    testImplementation "org.spockframework:spock-core:${spockVersion}"
+    testImplementation "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
 
     //Spring framework
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.spockframework:spock-spring:2.0-groovy-3.0'
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.spockframework:spock-spring:${spockVersion}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(15)
+        vendor = JvmVendorSpec.ADOPTOPENJDK
+    }
 }
 
 application {
@@ -105,20 +124,20 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.70
+                minimum = 0.85
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.70
+                minimum = 0.85
             }
         }
     }
-    afterEvaluate { // TODO [PK] remove after adding tests in Task #6
+    afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/controller/**')
+            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/InvoiceApplication.class')
         }))
     }
 }

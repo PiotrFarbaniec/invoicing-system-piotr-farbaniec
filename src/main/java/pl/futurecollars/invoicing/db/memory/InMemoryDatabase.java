@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
-@Primary
-@Repository
+@Slf4j
 public class InMemoryDatabase implements Database {
 
   private final Map<Integer, Invoice> invoices = new HashMap<>();
@@ -21,6 +19,7 @@ public class InMemoryDatabase implements Database {
   public int save(Invoice invoice) {
     invoice.setId(nextId);
     invoices.put(nextId, invoice);
+    log.info("Invoice: {} successful saved in database", invoice);
     return nextId++;
   }
 
@@ -34,14 +33,18 @@ public class InMemoryDatabase implements Database {
     if (invoices.containsKey(id)) {
       updateInvoice.setId(id);
       invoices.put(id, updateInvoice);
+      log.info("Invoice with id: {} successful updated", id);
     }
+    log.info("No invoice with the specified id: {} in database", id);
   }
 
   @Override
   public void delete(int id) {
     if (invoices.containsKey(id)) {
       invoices.remove(id);
+      log.info("Invoice with id: {} successful deleted", id);
     }
+    log.info("No invoice with the specified id: {} in database", id);
   }
 
   @Override

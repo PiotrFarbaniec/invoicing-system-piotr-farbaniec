@@ -20,9 +20,9 @@ class TestHelper {
                 new Company("987-743-21-08", "61-324 Poznan, ul.Wincentego Witosa 18", "Energon")
         ]
         def invoiceEntry = [
-                new InvoiceEntry("Invoice description No1", BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23),
-                new InvoiceEntry("Invoice description No2", BigDecimal.valueOf(3000), BigDecimal.valueOf(240), Vat.VAT_8),
-                new InvoiceEntry("Invoice description No3", BigDecimal.valueOf(3500), BigDecimal.valueOf(175), Vat.VAT_5)
+                new InvoiceEntry("Invoice description No1", 1, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23),
+                new InvoiceEntry("Invoice description No2", 1,  BigDecimal.valueOf(3000), BigDecimal.valueOf(240), Vat.VAT_8),
+                new InvoiceEntry("Invoice description No3", 1, BigDecimal.valueOf(3500), BigDecimal.valueOf(175), Vat.VAT_5)
         ]
         def invoices = []
         for (int i = 0; i < buyer.size(); i++) {

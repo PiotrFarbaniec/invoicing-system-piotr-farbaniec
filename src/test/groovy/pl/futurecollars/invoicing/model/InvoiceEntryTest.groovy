@@ -7,6 +7,7 @@ class InvoiceEntryTest extends Specification {
 
     InvoiceEntry invoiceEntry = new InvoiceEntry(
             "Usługa nabycia oprogramowania",
+            2,
             BigDecimal.valueOf(2500),
             BigDecimal.valueOf(575),
             Vat.VAT_23)
