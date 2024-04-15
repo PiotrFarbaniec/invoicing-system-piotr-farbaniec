@@ -1,5 +1,7 @@
 package pl.futurecollars.invoicing.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import pl.futurecollars.invoicing.service.InvoiceService;
 
 @RestController
 @RequestMapping("/invoices")
+@Api(tags = "invoice-controller")
 public class InvoiceController {
 
   @Autowired
@@ -28,6 +31,7 @@ public class InvoiceController {
     this.service = service;
   }
 
+  @ApiOperation(value = "Download list of all invoices")
   @GetMapping(value = "/get/all", produces = "application/json;charset=UTF-8")
   public ResponseEntity<List<Invoice>> getAllInvoices() {
     List<Invoice> invoicesList = service.getAll();
@@ -38,6 +42,7 @@ public class InvoiceController {
     }
   }
 
+  @ApiOperation(value = "Download an invoice by specific id /{number}")
   @GetMapping(value = "/get/{id}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<Invoice> getInvoiceById(@PathVariable int id) {
     Optional<Invoice> invoice = service.getById(id);
@@ -45,12 +50,14 @@ public class InvoiceController {
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
   }
 
+  @ApiOperation(value = "Save the new invoice in database /{content}")
   @PostMapping(value = "/add/", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> saveInvoice(@RequestBody Invoice invoice) {
     int added = service.save(invoice);
     return ResponseEntity.status(HttpStatus.CREATED).body("Invoice with ID: " + added + " has been successfully saved");
   }
 
+  @ApiOperation(value = "Update an invoice with a specific id /{number}")
   @PutMapping(value = "/update/{id}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> updateInvoice(@PathVariable int id, @RequestBody Invoice updatedInvoice) {
     Optional<Invoice> invoice = service.getById(id);
@@ -62,6 +69,7 @@ public class InvoiceController {
     }
   }
 
+  @ApiOperation(value = "Delete an invoice with a specific id /{number}")
   @DeleteMapping(value = "/delete/{id}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<String> deleteInvoice(@PathVariable int id) {
     Optional<Invoice> invoice = service.getById(id);
