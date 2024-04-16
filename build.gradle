@@ -15,6 +15,8 @@ buildscript {
         spockVersion = '2.0-groovy-3.0'
         byteBuddyVersion = '1.11.13'
         guavaVersion = '31.1-jre'
+        springFoxStarterVersion = '3.0.0'
+        springFoxUiVersion = '3.0.0'
     }
 }
 
@@ -71,6 +73,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.spockframework:spock-spring:${spockVersion}"
+
+    implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
+    implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
 }
 
 java {
