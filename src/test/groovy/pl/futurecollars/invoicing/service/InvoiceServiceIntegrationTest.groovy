@@ -11,8 +11,8 @@ class InvoiceServiceIntegrationTest extends Specification{
         given: "An instance of InvoiceService with InMemoryDatabase"
         InMemoryDatabase memoryDatabase = new InMemoryDatabase()
         InvoiceService invoiceService = new InvoiceService(memoryDatabase)
-        Invoice invoice1 = TestHelper.createInvoices()[0]
-        Invoice invoice2 = TestHelper.createInvoices()[1]
+        Invoice invoice1 = TestHelper.getInvoice()[0]
+        Invoice invoice2 = TestHelper.getInvoice()[1]
 
         when: "When invoice1 is saved in Database"
         Integer savedInvoice1 = invoiceService.save(invoice1)

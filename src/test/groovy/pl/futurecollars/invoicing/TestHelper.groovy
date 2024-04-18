@@ -8,25 +8,70 @@ import pl.futurecollars.invoicing.model.Vat
 import java.time.LocalDate
 
 class TestHelper {
-    static Invoice[] createInvoices() {
+
+    static Invoice[] getInvoice() {
         def buyer = [
-                new Company("423-456-78-90", "30-210 Krakow, ul.Kwiatowa 30", "COMPLEX"),
-                new Company("106-008-18-19", "62-500 Konin, ul.Akacjowa 2/15", "Digiwave"),
-                new Company("689-456-56-65", "22-455 Czartoria, ul.Powstancow 102", "Pixelux")
+                Company.builder()
+                        .taxIdentification("423-456-78-90")
+                        .address("30-210 Krakow, ul.Kwiatowa 30")
+                        .name("COMPLEX")
+                        .build(),
+                Company.builder()
+                        .taxIdentification("106-008-18-19")
+                        .address("62-500 Konin, ul.Akacjowa 2/15")
+                        .name("Digiwave")
+                        .build(),
+                Company.builder()
+                        .taxIdentification("689-456-56-65")
+                        .address("22-455 Czartoria, ul.Powstancow 102")
+                        .name("Pixelux")
+                        .build(),
         ]
+
         def seller = [
-                new Company("538-321-55-32", "04-413 Warszawa, ul.Gorna 5", "GLOBAL SOLUTIONS"),
-                new Company("458-116-52-51", "62-730 Czajkow, ul.Polna 56", "Infotech"),
-                new Company("987-743-21-08", "61-324 Poznan, ul.Wincentego Witosa 18", "Energon")
+                Company.builder()
+                        .taxIdentification("538-321-55-32")
+                        .address("04-413 Warszawa, ul.Gorna 5")
+                        .name("GLOBAL SOLUTIONS")
+                        .build(),
+                Company.builder()
+                        .taxIdentification("458-116-52-51")
+                        .address("62-730 Czajkow, ul.Polna 56")
+                        .name("Infotech")
+                        .build(),
+                Company.builder()
+                        .taxIdentification("987-743-21-08")
+                        .address("61-324 Poznan, ul.Wincentego Witosa 18")
+                        .name("Energon")
+                        .build(),
         ]
+
         def invoiceEntry = [
-                List.of(new InvoiceEntry("Invoice description No1", 1, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23)),
-                List.of(new InvoiceEntry("Invoice description No2", 1,  BigDecimal.valueOf(3000), BigDecimal.valueOf(240), Vat.VAT_8)),
-                List.of(new InvoiceEntry("Invoice description No3", 1, BigDecimal.valueOf(3500), BigDecimal.valueOf(175), Vat.VAT_5))
+                InvoiceEntry.builder()
+                        .description("Invoice description No1")
+                        .quantity(1)
+                        .price(BigDecimal.valueOf(2500))
+                        .vatValue(BigDecimal.valueOf(575))
+                        .vatRate(Vat.VAT_23)
+                        .build(),
+                InvoiceEntry.builder()
+                        .description("Invoice description No2")
+                        .quantity(1)
+                        .price(BigDecimal.valueOf(3000))
+                        .vatValue(BigDecimal.valueOf(240))
+                        .vatRate(Vat.VAT_8)
+                        .build(),
+                InvoiceEntry.builder()
+                        .description("Invoice description No3")
+                        .quantity(1)
+                        .price(BigDecimal.valueOf(3500))
+                        .vatValue(BigDecimal.valueOf(175))
+                        .vatRate(Vat.VAT_5)
+                        .build(),
         ]
         def invoices = []
         for (int i = 0; i < buyer.size(); i++) {
-            invoices << new Invoice(i+1, LocalDate.now(), buyer[i], seller[i], invoiceEntry[i])
+            invoices << new Invoice(i + 1, LocalDate.now(), buyer[i], seller[i], List.of(invoiceEntry[i]))
         }
         return invoices
     }

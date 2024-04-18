@@ -7,9 +7,9 @@ import spock.lang.Specification
 class InMemoryDatabaseTest extends Specification {
 
     InMemoryDatabase database = new InMemoryDatabase()
-    Invoice invoice1 = TestHelper.createInvoices()[0]
-    Invoice invoice2 = TestHelper.createInvoices()[1]
-    Invoice invoice3 = TestHelper.createInvoices()[2]
+    Invoice invoice1 = TestHelper.getInvoice()[0]
+    Invoice invoice2 = TestHelper.getInvoice()[1]
+    Invoice invoice3 = TestHelper.getInvoice()[2]
 
     def "should save given invoices"() {
         given:

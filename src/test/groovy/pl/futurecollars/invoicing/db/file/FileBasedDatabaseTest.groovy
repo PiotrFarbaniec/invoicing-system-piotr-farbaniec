@@ -21,9 +21,9 @@ class FileBasedDatabaseTest extends Specification {
 
     FileBasedDatabase fileDatabase = new FileBasedDatabase (manager, fileService, jsonService, idService, invoicePath)
 
-    Invoice invoice1 = TestHelper.createInvoices()[0]
-    Invoice invoice2 = TestHelper.createInvoices()[1]
-    Invoice invoice3 = TestHelper.createInvoices()[2]
+    Invoice invoice1 = TestHelper.getInvoice()[0]
+    Invoice invoice2 = TestHelper.getInvoice()[1]
+    Invoice invoice3 = TestHelper.getInvoice()[2]
 
 
     def setup() {

@@ -18,7 +18,6 @@ import java.time.LocalDate
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 
 @Stepwise
 @AutoConfigureMockMvc
@@ -45,9 +44,9 @@ class InvoiceControllerTest extends Specification {
 
     def "should add single invoice to database"() {
         given:
-        def firstInvoice = TestHelper.createInvoices()[0]
-        def secondInvoice = TestHelper.createInvoices()[1]
-        def thirdInvoice = TestHelper.createInvoices()[2]
+        def firstInvoice = TestHelper.getInvoice()[0]
+        def secondInvoice = TestHelper.getInvoice()[1]
+        def thirdInvoice = TestHelper.getInvoice()[2]
 
         def firstAsJson = jsonService.toJson(firstInvoice)
         def secondAsJson = jsonService.toJson(secondInvoice)
@@ -102,9 +101,9 @@ class InvoiceControllerTest extends Specification {
 
         then:
         expInvoices.size() == 3
-        expInvoices[0] == TestHelper.createInvoices()[0]
-        expInvoices[1] == TestHelper.createInvoices()[1]
-        expInvoices[2] == TestHelper.createInvoices()[2]
+        expInvoices[0] == TestHelper.getInvoice()[0]
+        expInvoices[1] == TestHelper.getInvoice()[1]
+        expInvoices[2] == TestHelper.getInvoice()[2]
     }
 
     def "should return an invoice if contain searched id=2"() {
@@ -119,7 +118,7 @@ class InvoiceControllerTest extends Specification {
 
         then:
         searchedInvoice.getId() == 2
-        searchedInvoice == TestHelper.createInvoices()[1]
+        searchedInvoice == TestHelper.getInvoice()[1]
     }
 
     def "should return nothing if invoice with specific id not exists"() {
@@ -187,8 +186,8 @@ class InvoiceControllerTest extends Specification {
 
         expInvoices.size() == 3
         expInvoices[0] == updatedInvoice
-        expInvoices[1] == TestHelper.createInvoices()[1]
-        expInvoices[2] == TestHelper.createInvoices()[2]
+        expInvoices[1] == TestHelper.getInvoice()[1]
+        expInvoices[2] == TestHelper.getInvoice()[2]
     }
 
     def "should delete invoice with specific id if exists"() {
@@ -212,8 +211,8 @@ class InvoiceControllerTest extends Specification {
 
         and:
         expInvoices.size() == 2
-        expInvoices[0] == TestHelper.createInvoices()[1]
-        expInvoices[1] == TestHelper.createInvoices()[2]
+        expInvoices[0] == TestHelper.getInvoice()[1]
+        expInvoices[1] == TestHelper.getInvoice()[2]
     }
 
     def "should not delete if invoice with specific id does not exist"() {
@@ -237,7 +236,7 @@ class InvoiceControllerTest extends Specification {
 
         and:
         expInvoices.size() == 2
-        expInvoices[0] == TestHelper.createInvoices()[1]
-        expInvoices[1] == TestHelper.createInvoices()[2]
+        expInvoices[0] == TestHelper.getInvoice()[1]
+        expInvoices[1] == TestHelper.getInvoice()[2]
     }
 }

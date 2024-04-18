@@ -38,7 +38,7 @@ class TaxCalculatorControllerTest extends Specification {
 
     def "tax-controller should return tax values for specified tax id number"() {
         given:
-        def invoice = TestHelper.createInvoices()[0]
+        def invoice = TestHelper.getInvoice()[0]
         def buyerId = "423-456-78-90"
         def sellerId = "538-321-55-32"
         def invoiceAsJson = jsonService.toJson(invoice)
@@ -48,14 +48,24 @@ class TaxCalculatorControllerTest extends Specification {
                         .content(invoiceAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
-                .andExpect(status().isCreated())
+
+        when:
+        def expResponse1 = mvc.perform(get("/tax/$buyerId"))
+                .andExpect(status().isOk())
                 .andReturn()
                 .response
                 .contentAsString
 
-        when:
-        def result = mvc.perform(
-                get("/tax/"))
-    }
+        def expResponse2 = mvc.perform(get("/tax/$sellerId"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .response
+                .contentAsString
 
+        then:
+        expResponse1 == "{\"incomingVat\":0,\"outgoingVat\":575,\"income\":0,\"costs\":2500,\"earnings\":-2500,\"vatToPay\":-575}"
+
+        and:
+        expResponse2 == "{\"incomingVat\":575,\"outgoingVat\":0,\"income\":2500,\"costs\":0,\"earnings\":2500,\"vatToPay\":575}"
+    }
 }

@@ -5,8 +5,8 @@ import spock.lang.Specification
 
 class CompanyTest extends Specification {
 
-   Company company1 = TestHelper.createInvoices()[0].getBuyer()
-   Company company2 = TestHelper.createInvoices()[0].getSeller()
+   Company company1 = TestHelper.getInvoice()[0].getBuyer()
+   Company company2 = TestHelper.getInvoice()[0].getSeller()
 
 
     Company nullCompany = null

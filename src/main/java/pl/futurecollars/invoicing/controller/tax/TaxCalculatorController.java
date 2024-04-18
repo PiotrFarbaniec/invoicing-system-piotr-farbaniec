@@ -22,10 +22,6 @@ public class TaxCalculatorController implements TaxCalculatorApi {
 
   @Override
   public ResponseEntity<TaxCalculatorResult> calulateTaxes(@PathVariable @ApiParam(example = "555-444-33-22") String taxIdNumber) {
-    if (taxCalculatorService.calculateTaxes(taxIdNumber) == null) {
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    } else {
-      return ResponseEntity.status(HttpStatus.OK).body(taxCalculatorService.calculateTaxes(taxIdNumber));
-    }
+    return ResponseEntity.status(HttpStatus.OK).body(taxCalculatorService.calculateTaxes(taxIdNumber));
   }
 }
