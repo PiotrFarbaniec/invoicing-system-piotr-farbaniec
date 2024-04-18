@@ -2,6 +2,7 @@ package pl.futurecollars.invoicing.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,13 +19,13 @@ public class Invoice {
   @ApiModelProperty(value = "Company selling the product/service", required = true)
   private Company seller;
   @ApiModelProperty(value = "All invoiced products/services", required = true)
-  private InvoiceEntry[] entries; // ZMIANA NA TABLICĘ INVOICE_ENTRY
+  private List<InvoiceEntry> entries;
 
   public Invoice() {
   }
 
-  public Invoice(int id, LocalDate date, Company buyer, Company seller, InvoiceEntry... entries) {
-    this.id = id; // ZMIANA NA TABLICĘ
+  public Invoice(int id, LocalDate date, Company buyer, Company seller, List<InvoiceEntry> entries) {
+    this.id = id;
     this.date = date;
     this.buyer = buyer;
     this.seller = seller;

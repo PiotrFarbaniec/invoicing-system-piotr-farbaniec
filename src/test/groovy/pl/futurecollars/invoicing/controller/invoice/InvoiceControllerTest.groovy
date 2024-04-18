@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller
+package pl.futurecollars.invoicing.controller.invoice
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -138,7 +138,7 @@ class InvoiceControllerTest extends Specification {
         given:
         Company updateBuyer = new Company("555-444-22-11", "00-100 Warszawa, ul.Wiejska 18", "DRAGON")
         Company updateSeller = new Company("800-700-40-10", "97-400 Adamow, ul.Jasna 45", "FUTURE")
-        InvoiceEntry updateEntry = new InvoiceEntry("SOME NEW DESCRIPTION", 2, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23)
+        List<InvoiceEntry> updateEntry = List.of(new InvoiceEntry("SOME NEW DESCRIPTION", 2, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23))
         Invoice updatedInvoice = new Invoice(5, LocalDate.of(2020, 8, 19), updateBuyer, updateSeller, updateEntry)
 
         def updatedAsJson = jsonService.toJson(updatedInvoice)
@@ -160,7 +160,7 @@ class InvoiceControllerTest extends Specification {
         given:
         Company updateBuyer = new Company("555-444-22-11", "00-100 Warszawa, ul.Wiejska 18", "DRAGON")
         Company updateSeller = new Company("800-700-40-10", "97-400 Adamow, ul.Jasna 45", "FUTURE")
-        InvoiceEntry updateEntry = new InvoiceEntry("SOME NEW DESCRIPTION", 2, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23)
+        List<InvoiceEntry> updateEntry = List.of(new InvoiceEntry("SOME NEW DESCRIPTION", 2, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23))
         Invoice updatedInvoice = new Invoice(1, LocalDate.now(), updateBuyer, updateSeller, updateEntry)
 
 

@@ -10,10 +10,7 @@ import pl.futurecollars.invoicing.model.InvoiceEntry;
 @Service
 public class TaxCalculatorService {
 
-  private Database database;
-
-  public TaxCalculatorService() {
-  }
+  private final Database database;
 
   public TaxCalculatorService(Database database) {
     this.database = database;
