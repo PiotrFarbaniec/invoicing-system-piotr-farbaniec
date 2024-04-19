@@ -11,8 +11,8 @@ class InvoiceServiceIntegrationTest extends Specification{
         given: "An instance of InvoiceService with InMemoryDatabase"
         InMemoryDatabase memoryDatabase = new InMemoryDatabase()
         InvoiceService invoiceService = new InvoiceService(memoryDatabase)
-        Invoice invoice1 = TestHelper.createInvoices()[0]
-        Invoice invoice2 = TestHelper.createInvoices()[1]
+        Invoice invoice1 = TestHelper.getInvoice()[0]
+        Invoice invoice2 = TestHelper.getInvoice()[1]
 
         when: "When invoice1 is saved in Database"
         Integer savedInvoice1 = invoiceService.save(invoice1)
@@ -29,12 +29,12 @@ class InvoiceServiceIntegrationTest extends Specification{
         assert found.id == savedInvoice1
 
         when: "When invoice1 is updated"
-        found.getSeller().setTaxIdentifications("987-743-21-08")
+        found.getSeller().setTaxIdentification("987-743-21-08")
         invoiceService.update(found.getId(), found)
 
         then: "Then has new provided parameter"
         Invoice updatedInvoice = invoiceService.getById(found.getId()).get()
-        assert updatedInvoice.getSeller().getTaxIdentifications() == "987-743-21-08"
+        assert updatedInvoice.getSeller().getTaxIdentification() == "987-743-21-08"
 
         when: "When invoice1 is deleted"
         invoiceService.delete(updatedInvoice.getId())

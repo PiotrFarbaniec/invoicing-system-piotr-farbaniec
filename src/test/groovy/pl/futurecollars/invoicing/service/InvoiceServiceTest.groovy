@@ -16,7 +16,7 @@ class InvoiceServiceTest extends Specification {
 
     def "should save given invoice"() {
         given:
-        def invoice = TestHelper.createInvoices()[0]
+        def invoice = TestHelper.getInvoice()[0]
 
         when:
         service.save(invoice)
@@ -27,7 +27,7 @@ class InvoiceServiceTest extends Specification {
 
     def "should get invoice by given id"() {
         given:
-        def invoice = TestHelper.createInvoices()[0]
+        def invoice = TestHelper.getInvoice()[0]
         service.save(invoice)
 
         when:
@@ -50,8 +50,8 @@ class InvoiceServiceTest extends Specification {
 
     def "should update invoice if present"() {
         given:
-        def invoice = TestHelper.createInvoices()[0]
-        def newInvoice = TestHelper.createInvoices()[2]
+        def invoice = TestHelper.getInvoice()[0]
+        def newInvoice = TestHelper.getInvoice()[2]
         database.update(invoice.getId(), newInvoice) >> newInvoice
 
         when:
@@ -64,7 +64,7 @@ class InvoiceServiceTest extends Specification {
     def "should throw an exception if updated invoice not exists"() {
         given:
         def id = 2
-        def updateInvoice = TestHelper.createInvoices()[1]
+        def updateInvoice = TestHelper.getInvoice()[1]
 
         when:
         service.update(id, updateInvoice)
@@ -78,7 +78,7 @@ class InvoiceServiceTest extends Specification {
     def "should delete an invoice if present"() {
         given:
         def id = 1
-        def invoice = TestHelper.createInvoices()[0]
+        def invoice = TestHelper.getInvoice()[0]
         service.save(invoice)
         database.delete(invoice.id) >> []
 
@@ -92,7 +92,7 @@ class InvoiceServiceTest extends Specification {
     def "should throw an exception if deleted invoice not exists"() {
         given:
         def id = 1
-        Invoice invoice = TestHelper.createInvoices()[0]
+        Invoice invoice = TestHelper.getInvoice()[0]
 
         when:
         service.save(invoice)

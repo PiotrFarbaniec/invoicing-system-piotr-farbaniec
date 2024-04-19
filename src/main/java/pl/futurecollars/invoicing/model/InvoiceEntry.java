@@ -2,9 +2,11 @@ package pl.futurecollars.invoicing.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class InvoiceEntry {
 
   @ApiModelProperty(value = "Product/service description", required = true, example = "management software")

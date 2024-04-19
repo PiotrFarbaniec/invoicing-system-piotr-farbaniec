@@ -5,23 +5,23 @@ import spock.lang.Specification
 
 class CompanyTest extends Specification {
 
-   Company company1 = TestHelper.createInvoices()[0].getBuyer()
-   Company company2 = TestHelper.createInvoices()[0].getSeller()
+   Company company1 = TestHelper.getInvoice()[0].getBuyer()
+   Company company2 = TestHelper.getInvoice()[0].getSeller()
 
 
     Company nullCompany = null
 
     def "should set new tax id"() {
         setup:
-        def oldId = company1.getTaxIdentifications()
+        def oldId = company1.getTaxIdentification()
         def newId = "500-777-50-40"
 
         when:
-        company1.setTaxIdentifications(newId)
+        company1.setTaxIdentification(newId)
 
         then:
-        company1.getTaxIdentifications() == newId
-        company1.getTaxIdentifications() != oldId
+        company1.getTaxIdentification() == newId
+        company1.getTaxIdentification() != oldId
     }
 
     def "should set new company address"() {
@@ -79,7 +79,7 @@ class CompanyTest extends Specification {
         def expResult = "423-456-78-90"
 
         when:
-        def result = company1.getTaxIdentifications().toString()
+        def result = company1.getTaxIdentification().toString()
 
         then:
         assert expResult.contains(result)

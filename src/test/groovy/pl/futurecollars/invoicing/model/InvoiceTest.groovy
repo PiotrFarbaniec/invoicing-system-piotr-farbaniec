@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 class InvoiceTest extends Specification {
 
-    Invoice invoice = TestHelper.createInvoices()[0]
+    Invoice invoice = TestHelper.getInvoice()[0]
 
     def "should set new company id"() {
         given:

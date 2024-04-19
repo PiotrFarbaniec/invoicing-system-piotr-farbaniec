@@ -59,7 +59,7 @@ class InvoiceEntryTest extends Specification {
 
     def "When equal() called on same objects should return true"() {
         given:
-        def entry = TestHelper.createInvoices()[0].getInvoiceEntry()
+        def entry = TestHelper.getInvoice()[0].getEntries()
 
         when:
         entry.equals(entry)
@@ -70,9 +70,9 @@ class InvoiceEntryTest extends Specification {
 
     def "When equal() called on different objects should return false"() {
         given:
-        def entry1 = TestHelper.createInvoices()[0].getInvoiceEntry()
-        def entry2 = TestHelper.createInvoices()[1].getInvoiceEntry()
-        def entry3 = TestHelper.createInvoices()[2].getInvoiceEntry()
+        def entry1 = TestHelper.getInvoice()[0].getEntries()
+        def entry2 = TestHelper.getInvoice()[1].getEntries()
+        def entry3 = TestHelper.getInvoice()[2].getEntries()
 
         when:
         !entry1.equals(entry2)
@@ -87,8 +87,8 @@ class InvoiceEntryTest extends Specification {
 
     def "toString method give correct values"() {
         given:
-        def entry1 = TestHelper.createInvoices()[0].getInvoiceEntry()
-        def entry2 = TestHelper.createInvoices()[1].getInvoiceEntry()
+        def entry1 = TestHelper.getInvoice()[0].getEntries()
+        def entry2 = TestHelper.getInvoice()[1].getEntries()
 
         when:
         def first = entry1.toString()
@@ -101,7 +101,7 @@ class InvoiceEntryTest extends Specification {
 
     def "setDescription called should modify description"() {
         given:
-        def entry = TestHelper.createInvoices()[0].getInvoiceEntry()
+        def entry = TestHelper.getInvoice()[0].getEntries()[0]
 
         when:
         def description = "New description"
@@ -113,7 +113,7 @@ class InvoiceEntryTest extends Specification {
 
     def "setPrice called should modify price"() {
         given:
-        def entry = TestHelper.createInvoices()[1].getInvoiceEntry()
+        def entry = TestHelper.getInvoice()[1].getEntries()[0]
 
         when:
         def price = BigDecimal.valueOf(5000)
@@ -126,7 +126,7 @@ class InvoiceEntryTest extends Specification {
 
     def "setVatValue called should modify Vat value"() {
         given:
-        def entry = TestHelper.createInvoices()[1].getInvoiceEntry()
+        def entry = TestHelper.getInvoice()[1].getEntries()[0]
 
         when:
         def vatValue = BigDecimal.valueOf(640)
@@ -139,7 +139,7 @@ class InvoiceEntryTest extends Specification {
 
     def "setVatRate called should modify Vat rate"() {
         given:
-        def entry = TestHelper.createInvoices()[2].getInvoiceEntry()
+        def entry = TestHelper.getInvoice()[2].getEntries()[0]
 
         when:
         def vatRate = Vat.VAT_0
