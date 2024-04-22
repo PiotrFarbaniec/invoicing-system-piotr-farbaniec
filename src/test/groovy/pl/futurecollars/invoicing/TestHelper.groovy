@@ -50,28 +50,36 @@ class TestHelper {
                 InvoiceEntry.builder()
                         .description("Invoice description No1")
                         .quantity(1)
-                        .price(BigDecimal.valueOf(2500))
+                        .netPrice(BigDecimal.valueOf(2500))
                         .vatValue(BigDecimal.valueOf(575))
                         .vatRate(Vat.VAT_23)
                         .build(),
                 InvoiceEntry.builder()
                         .description("Invoice description No2")
                         .quantity(1)
-                        .price(BigDecimal.valueOf(3000))
+                        .netPrice(BigDecimal.valueOf(3000))
                         .vatValue(BigDecimal.valueOf(240))
                         .vatRate(Vat.VAT_8)
                         .build(),
                 InvoiceEntry.builder()
                         .description("Invoice description No3")
                         .quantity(1)
-                        .price(BigDecimal.valueOf(3500))
+                        .netPrice(BigDecimal.valueOf(3500))
                         .vatValue(BigDecimal.valueOf(175))
                         .vatRate(Vat.VAT_5)
                         .build(),
         ]
+
         def invoices = []
+
         for (int i = 0; i < buyer.size(); i++) {
-            invoices << new Invoice(i + 1, LocalDate.now(), buyer[i], seller[i], List.of(invoiceEntry[i]))
+            invoices << Invoice.builder()
+                    .id(i + 1)
+                    .date(LocalDate.now())
+                    .buyer(buyer[i])
+                    .seller(seller[i])
+                    .entries(List.of(invoiceEntry[i]))
+                    .build()
         }
         return invoices
     }

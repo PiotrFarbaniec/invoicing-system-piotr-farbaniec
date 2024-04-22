@@ -1,9 +1,12 @@
 package pl.futurecollars.invoicing.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
 import java.util.function.Predicate;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
+import pl.futurecollars.invoicing.model.Car;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
 
@@ -17,11 +20,20 @@ public class TaxCalculatorService {
   }
 
   public BigDecimal income(String taxIdNumber) {
-    return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getPrice);
+    return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getNetPrice);
   }
 
   public BigDecimal costs(String taxIdNumber) {
-    return database.visit(buyerPredicate(taxIdNumber), InvoiceEntry::getPrice);
+    return database.visit(buyerPredicate(taxIdNumber), this::getVatValueTakingIntoConsiderationPersonalCarUse);
+  }
+
+  private BigDecimal getVatValueTakingIntoConsiderationPersonalCarUse(InvoiceEntry invoiceEntry) {
+    return Optional.ofNullable(invoiceEntry.getCarRelatedExpenses())
+        .map(Car::isUsedPrivately)
+        .map(personalCarUsage -> personalCarUsage ? BigDecimal.valueOf(5, 1) : BigDecimal.ONE)
+        .map(proportion -> invoiceEntry.getVatValue().multiply(proportion))
+        .map(value -> value.setScale(2, RoundingMode.FLOOR))
+        .orElse(invoiceEntry.getVatValue());
   }
 
   public BigDecimal incomingVat(String taxIdNumber) {
@@ -32,11 +44,11 @@ public class TaxCalculatorService {
     return database.visit(buyerPredicate(taxIdNumber), InvoiceEntry::getVatValue);
   }
 
-  public BigDecimal calculateEarnings(String taxIdNumber) {
+  public BigDecimal getEarnings(String taxIdNumber) {
     return income(taxIdNumber).subtract(costs(taxIdNumber));
   }
 
-  public BigDecimal calculateVatToPay(String taxIdNumber) {
+  public BigDecimal getVatToPay(String taxIdNumber) {
     return incomingVat(taxIdNumber).subtract(outgoingVat(taxIdNumber));
   }
 
@@ -52,10 +64,11 @@ public class TaxCalculatorService {
     return TaxCalculatorResult.builder()
         .income(income(taxIdNumber))
         .costs(costs(taxIdNumber))
-        .incomingVat(incomingVat(taxIdNumber))
-        .outgoingVat(outgoingVat(taxIdNumber))
-        .earnings(calculateEarnings(taxIdNumber))
-        .vatToPay(calculateVatToPay(taxIdNumber))
+        .earnings(getEarnings(taxIdNumber))
+        .collectedVat(incomingVat(taxIdNumber))
+        .paidVat(outgoingVat(taxIdNumber))
+        .earnings(getEarnings(taxIdNumber))
+        .vatToPay(getVatToPay(taxIdNumber))
         .build();
   }
 }

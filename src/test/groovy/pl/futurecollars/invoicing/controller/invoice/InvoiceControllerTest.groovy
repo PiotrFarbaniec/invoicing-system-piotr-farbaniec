@@ -135,10 +135,33 @@ class InvoiceControllerTest extends Specification {
 
     def "should return 204 status code (NO CONTENT) if updating invoice does not exits"() {
         given:
-        Company updateBuyer = new Company("555-444-22-11", "00-100 Warszawa, ul.Wiejska 18", "DRAGON")
-        Company updateSeller = new Company("800-700-40-10", "97-400 Adamow, ul.Jasna 45", "FUTURE")
-        List<InvoiceEntry> updateEntry = List.of(new InvoiceEntry("SOME NEW DESCRIPTION", 2, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23))
-        Invoice updatedInvoice = new Invoice(5, LocalDate.of(2020, 8, 19), updateBuyer, updateSeller, updateEntry)
+        def updateBuyer = Company.builder()
+                .taxIdentification("555-444-22-11")
+                .address("00-100 Warszawa, ul.Wiejska 18")
+                .name("DRAGON")
+                .build()
+
+        def updateSeller = Company.builder()
+                .taxIdentification("800-700-40-10")
+                .address("97-400 Adamow, ul.Jasna 45")
+                .name("FUTURE")
+                .build()
+
+        def updateEntry = List.of(InvoiceEntry.builder()
+                .description("SOME NEW DESCRIPTION")
+                .quantity(2)
+                .netPrice(BigDecimal.valueOf(2500))
+                .vatValue(BigDecimal.valueOf(575))
+                .vatRate(Vat.VAT_23)
+                .build())
+
+        def updatedInvoice = Invoice.builder()
+                .id(5)
+                .date(LocalDate.of(2020, 8, 19))
+                .buyer(updateBuyer)
+                .seller(updateSeller)
+                .entries(updateEntry)
+                .build()
 
         def updatedAsJson = jsonService.toJson(updatedInvoice)
 
@@ -157,11 +180,33 @@ class InvoiceControllerTest extends Specification {
 
     def "should update (if exists) stored invoice by specific id (1)"() {
         given:
-        Company updateBuyer = new Company("555-444-22-11", "00-100 Warszawa, ul.Wiejska 18", "DRAGON")
-        Company updateSeller = new Company("800-700-40-10", "97-400 Adamow, ul.Jasna 45", "FUTURE")
-        List<InvoiceEntry> updateEntry = List.of(new InvoiceEntry("SOME NEW DESCRIPTION", 2, BigDecimal.valueOf(2500), BigDecimal.valueOf(575), Vat.VAT_23))
-        Invoice updatedInvoice = new Invoice(1, LocalDate.now(), updateBuyer, updateSeller, updateEntry)
+        def updateBuyer = Company.builder()
+                .taxIdentification("555-444-22-11")
+                .address("00-100 Warszawa, ul.Wiejska 18")
+                .name("DRAGON")
+                .build()
 
+        def updateSeller = Company.builder()
+                .taxIdentification("800-700-40-10")
+                .address("97-400 Adamow, ul.Jasna 45")
+                .name("FUTURE")
+                .build()
+
+        def updateEntry = List.of(InvoiceEntry.builder()
+                .description("SOME NEW DESCRIPTION")
+                .quantity(2)
+                .netPrice(BigDecimal.valueOf(2500))
+                .vatValue(BigDecimal.valueOf(575))
+                .vatRate(Vat.VAT_23)
+                .build())
+
+        def updatedInvoice = Invoice.builder()
+                .id(1)
+                .date(LocalDate.now())
+                .buyer(updateBuyer)
+                .seller(updateSeller)
+                .entries(updateEntry)
+                .build()
 
         def updatedAsJson = jsonService.toJson(updatedInvoice)
 

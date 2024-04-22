@@ -11,7 +11,6 @@ class InvoiceTest extends Specification {
 
     def "should set new company id"() {
         given:
-        Integer odlId = 1
         Integer newId = 20
 
         when:
@@ -41,7 +40,12 @@ class InvoiceTest extends Specification {
     def "should set new buyer"() {
         given:
         Company oldBuyer = invoice.getBuyer()
-        Company newBuyer = new Company("689-456-56-65", "22-455 Czartoria, ul.Powstańców 102", "Pixelux")
+
+        Company newBuyer = Company.builder()
+                .taxIdentification("689-456-56-65")
+                .address("22-455 Czartoria, ul.Powstańców 102")
+                .name("Pixelux")
+                .build()
 
         when:
         invoice.setBuyer(newBuyer)
@@ -57,7 +61,12 @@ class InvoiceTest extends Specification {
     def "should set new seller"() {
         given:
         Company oldSeller = invoice.getSeller()
-        Company newSeller = new Company("987-743-21-08", "61-324 Poznań, ul.Wincentego Witosa 18", "Energon")
+
+        Company newSeller = Company.builder()
+                .taxIdentification("987-743-21-08")
+                .address("61-324 Poznań, ul.Wincentego Witosa 18")
+                .name("Energon")
+                .build()
 
         when:
         invoice.setSeller(newSeller)
