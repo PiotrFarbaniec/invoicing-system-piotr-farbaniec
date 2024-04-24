@@ -6,19 +6,22 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.service.TaxCalculatorResult;
 
 @RequestMapping(value = {"/tax"})
 @Api(tags = {"tax-controller"})
 public interface TaxCalculatorApi {
 
-  /* @ApiOperation(value = "Download tax calculations by specified identification tax number")
-  @GetMapping(value = {"/{taxIdNumber}"}, produces = {"application/json;charset=UTF-8"})
-  @ResponseStatus(HttpStatus.OK)
-  TaxCalculatorResult calculateTaxes(@PathVariable @ApiParam(example = "555-444-33-22") String taxIdNumber); */
 
-  @ApiOperation(value = "Download tax calculations by specified identification tax number")
-  @GetMapping(value = {"/{taxIdNumber}"}, produces = {"application/json;charset=UTF-8"})
-  ResponseEntity<TaxCalculatorResult> calulateTaxes(@PathVariable @ApiParam(example = "555-444-33-22") String taxIdNumber);
+  @ApiOperation(value = "Get tax calculations according to specific company /{content}")
+  @PostMapping(value = {"/company/"}, produces = {"application/json;charset=UTF-8"})
+  ResponseEntity<TaxCalculatorResult> calulateTaxes(@RequestBody Company company);
+
+
+
+
 }

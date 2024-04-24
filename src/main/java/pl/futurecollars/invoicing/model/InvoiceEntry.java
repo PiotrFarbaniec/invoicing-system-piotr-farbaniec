@@ -2,6 +2,7 @@ package pl.futurecollars.invoicing.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,7 +20,7 @@ public class InvoiceEntry {
   private BigDecimal vatValue;
   @ApiModelProperty(value = "Applicable VAT rate", required = true)
   private Vat vatRate;
-  @ApiModelProperty(value = "Costs associated with a car while purchase/sell products or services")
+  @ApiModelProperty(value = "Car/cars used to buy/sell products or services")
   private Car carRelatedExpenses;
 
   public InvoiceEntry() {

@@ -16,10 +16,10 @@ public class Company {
   @ApiModelProperty(value = "Company name", required = true, example = "Best Code S.A.")
   private String name;
   @Builder.Default
-  @ApiModelProperty(value = "Pension insurance expenses", required = true, example = "1873.43")
+  @ApiModelProperty(value = "Pension insurance expenses", required = true, example = "873.43")
   private BigDecimal pensionInsurance = BigDecimal.ZERO;
   @Builder.Default
-  @ApiModelProperty(value = "Health insurance expenses", required = true, example = "1420.88")
+  @ApiModelProperty(value = "Health insurance expenses", required = true, example = "420.88")
   private BigDecimal healthInsurance = BigDecimal.ZERO;
 
   public Company() {
