@@ -29,23 +29,20 @@ public class TaxCalculatorService {
     return database.visit(buyerPredicate(taxIdNumber), this::getIncomeValueTakingIntoConsiderationPersonalCarUse);
   }
 
-  //  finalnie metoda zwraca koszty firmy (netto)
   private BigDecimal getIncomeValueTakingIntoConsiderationPersonalCarUse(InvoiceEntry invoiceEntry) {
-    return invoiceEntry.getNetPrice() // kwoty netto zakupionych towarów
-        .add(invoiceEntry.getVatValue())  // kwoty brutto zakupionych towarów
-        .subtract(getVatValueTakingIntoConsiderationPersonalCarUse(invoiceEntry));  // koszty pomniejszone o kwoty związane z użytkowaniem pojadu
+    return invoiceEntry.getNetPrice()
+        .add(invoiceEntry.getVatValue())
+        .subtract(getVatValueTakingIntoConsiderationPersonalCarUse(invoiceEntry));
   }
 
   public BigDecimal getEarnings(String taxIdNumber) {
     return income(taxIdNumber).subtract(costs(taxIdNumber));
   }
 
-  //  wcześniejsza nazwa metody incomingVat() - jest to wartość podatku zebranego podczas sprzedaży produktów/usług
   public BigDecimal collectedVat(String taxIdNumber) {
     return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getVatValue);
   }
 
-  //  wcześniejsza nazwa metody outgoingVat() - jest to sumaryczna wartość zapłaconego podatku VAT
   public BigDecimal paidVat(String taxIdNumber) {
     return database.visit(buyerPredicate(taxIdNumber), this::getVatValueTakingIntoConsiderationPersonalCarUse);
   }
@@ -73,33 +70,37 @@ public class TaxCalculatorService {
 
   public BigDecimal getTaxBase(Company company) {
     return (getEarnings(company.getTaxIdentification())
-        .subtract(company.getPensionInsurance())).setScale(2, RoundingMode.HALF_UP);
+        .subtract(company.getPensionInsurance()))
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
   public BigDecimal getAboveRoundedTaxBase(Company company) {
-    BigDecimal originalValue = getTaxBase(company);
-    return originalValue.setScale(0, RoundingMode.HALF_UP);
+    /* BigDecimal originalValue = getTaxBase(company); */
+    return getTaxBase(company).setScale(0, RoundingMode.HALF_UP);
   }
 
   public BigDecimal getIncomeTax(Company company) {
-    return getAboveRoundedTaxBase(company).multiply(BigDecimal.valueOf(Vat.VAT_19.getRate()));
+    return (getAboveRoundedTaxBase(company)
+        .multiply(BigDecimal.valueOf(Vat.VAT_19.getRate())))
+        .setScale(2, RoundingMode.HALF_DOWN);
   }
 
   public BigDecimal getReducedHealthInsurance(Company company) {
     BigDecimal refInsurance = company.getHealthInsurance();
-    return refInsurance.multiply(BigDecimal.valueOf((Vat.VAT_7_75.getRate()) / Vat.VAT_9.getRate()));
+    return refInsurance.multiply((BigDecimal.valueOf(Vat.VAT_7_75.getRate()))
+        .divide(BigDecimal.valueOf(Vat.VAT_9.getRate()), 2, RoundingMode.HALF_DOWN));
   }
 
   public BigDecimal getFinalIncomeTax(Company company) {
-    return (getIncomeTax(company).subtract(getReducedHealthInsurance(company))).setScale(2, RoundingMode.HALF_UP);
+    return (getIncomeTax(company)
+        .subtract(getReducedHealthInsurance(company)))
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
-  public BigDecimal getRoundedIncomeTaxValue(Company company) {
-
-    return getFinalIncomeTax(company).setScale(0, RoundingMode.HALF_UP);
+  public BigDecimal getRoundedFinalIncomeTax(Company company) {
+    return getFinalIncomeTax(company)
+        .setScale(0, RoundingMode.HALF_UP);
   }
-
-  //  =================================================================
 
   public TaxCalculatorResult calculateTaxes(Company company) {
     String taxIdNumber = company.getTaxIdentification();
@@ -114,16 +115,9 @@ public class TaxCalculatorService {
         .healthInsurancePaid(company.getHealthInsurance())
         .healthInsuranceToSubtract(getReducedHealthInsurance(company))
         .incomeTaxMinusHealthInsurance(getFinalIncomeTax(company))
-        .finalIncomeTax(getRoundedIncomeTaxValue(company))
+        .finalIncomeTax(getRoundedFinalIncomeTax(company))
 
-        .build();
-        /*.income(income(taxIdNumber))
-        .costs(costs(taxIdNumber))
-        .earnings(getEarnings(taxIdNumber))
         .collectedVat(collectedVat(taxIdNumber))
-        .paidVat(paidVat(taxIdNumber))
-        .earnings(getEarnings(taxIdNumber))
-        .vatToReturn(getVatToReturn(taxIdNumber))
-        .build();*/
+        .build();
   }
 }

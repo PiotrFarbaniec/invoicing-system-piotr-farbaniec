@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
+import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
 
@@ -24,8 +25,16 @@ class TaxCalculatorControllerTest extends Specification {
     private JsonService jsonService
 
     def "tax-controller should return 200 (OK) and null values when no invoices in database"() {
+//        given:
+//        Company company = new Company();
+//        def companyAsJson = jsonService.toJson(company)
+
         when:
-        def expResponse = mvc.perform(get("/tax/333-222-11-11"))
+        def expResponse = mvc.perform(
+                post("/tax/company/")
+                .content()
+                .contentType(MediaType.APPLICATION_JSON)
+        )
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
