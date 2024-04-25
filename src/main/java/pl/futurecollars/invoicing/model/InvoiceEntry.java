@@ -19,7 +19,7 @@ public class InvoiceEntry {
   private BigDecimal vatValue;
   @ApiModelProperty(value = "Applicable VAT rate", required = true)
   private Vat vatRate;
-  @ApiModelProperty(value = "Car/cars used to buy/sell products or services")
+  @ApiModelProperty(value = "Vehicle used by the company to deliver products or services")
   private Car carRelatedExpenses;
 
   public InvoiceEntry() {

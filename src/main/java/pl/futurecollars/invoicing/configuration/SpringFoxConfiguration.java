@@ -23,7 +23,7 @@ public class SpringFoxConfiguration {
         .build()
         .tags(
             new Tag("invoice-controller", "This controller is used to: [add] [update] [delete] [get] invoices from the database"),
-            new Tag("tax-controller", "This controller is used to calculate the tax value according to the tax identification number searched for")
+            new Tag("tax-controller", "This controller is used to calculate the value of tax components for the company you are looking for")
         )
         .apiInfo(apiInfo());
   }

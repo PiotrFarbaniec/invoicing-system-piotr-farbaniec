@@ -21,29 +21,31 @@ public class TaxCalculatorService {
     this.database = database;
   }
 
-  public BigDecimal income(String taxIdNumber) {
+  public BigDecimal getIncome(String taxIdNumber) {
     return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getNetPrice);
   }
 
-  public BigDecimal costs(String taxIdNumber) {
+  public BigDecimal getCosts(String taxIdNumber) {
     return database.visit(buyerPredicate(taxIdNumber), this::getIncomeValueTakingIntoConsiderationPersonalCarUse);
   }
 
   private BigDecimal getIncomeValueTakingIntoConsiderationPersonalCarUse(InvoiceEntry invoiceEntry) {
     return invoiceEntry.getNetPrice()
         .add(invoiceEntry.getVatValue())
-        .subtract(getVatValueTakingIntoConsiderationPersonalCarUse(invoiceEntry));
+        .subtract(getVatValueTakingIntoConsiderationPersonalCarUse(invoiceEntry))
+        .setScale(2, RoundingMode.FLOOR);
   }
 
   public BigDecimal getEarnings(String taxIdNumber) {
-    return income(taxIdNumber).subtract(costs(taxIdNumber));
+    return getIncome(taxIdNumber).subtract(getCosts(taxIdNumber));
   }
 
-  public BigDecimal collectedVat(String taxIdNumber) {
-    return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getVatValue);
+  public BigDecimal getCollectedVat(String taxIdNumber) {
+    return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getVatValue)
+        .setScale(2, RoundingMode.HALF_DOWN);
   }
 
-  public BigDecimal paidVat(String taxIdNumber) {
+  public BigDecimal getPaidVat(String taxIdNumber) {
     return database.visit(buyerPredicate(taxIdNumber), this::getVatValueTakingIntoConsiderationPersonalCarUse);
   }
 
@@ -57,7 +59,7 @@ public class TaxCalculatorService {
   }
 
   public BigDecimal getVatToReturn(String taxIdNumber) {
-    return collectedVat(taxIdNumber).subtract(paidVat(taxIdNumber));
+    return getCollectedVat(taxIdNumber).subtract(getPaidVat(taxIdNumber));
   }
 
   private Predicate<Invoice> sellerPredicate(String taxIdNumber) {
@@ -71,11 +73,10 @@ public class TaxCalculatorService {
   public BigDecimal getTaxBase(Company company) {
     return (getEarnings(company.getTaxIdentification())
         .subtract(company.getPensionInsurance()))
-        .setScale(2, RoundingMode.HALF_UP);
+        .setScale(2, RoundingMode.HALF_DOWN);
   }
 
   public BigDecimal getAboveRoundedTaxBase(Company company) {
-    /* BigDecimal originalValue = getTaxBase(company); */
     return getTaxBase(company).setScale(0, RoundingMode.HALF_UP);
   }
 
@@ -86,27 +87,26 @@ public class TaxCalculatorService {
   }
 
   public BigDecimal getReducedHealthInsurance(Company company) {
-    BigDecimal refInsurance = company.getHealthInsurance();
-    return refInsurance.multiply((BigDecimal.valueOf(Vat.VAT_7_75.getRate()))
-        .divide(BigDecimal.valueOf(Vat.VAT_9.getRate()), 2, RoundingMode.HALF_DOWN));
+    return company.getHealthInsurance().multiply(BigDecimal.valueOf(Vat.VAT_7_75.getRate()))
+        .divide(BigDecimal.valueOf(Vat.VAT_9.getRate()), 2, RoundingMode.HALF_DOWN);
   }
 
   public BigDecimal getFinalIncomeTax(Company company) {
     return (getIncomeTax(company)
         .subtract(getReducedHealthInsurance(company)))
-        .setScale(2, RoundingMode.HALF_UP);
+        .setScale(2, RoundingMode.HALF_DOWN);
   }
 
   public BigDecimal getRoundedFinalIncomeTax(Company company) {
     return getFinalIncomeTax(company)
-        .setScale(0, RoundingMode.HALF_UP);
+        .setScale(0, RoundingMode.HALF_DOWN);
   }
 
   public TaxCalculatorResult calculateTaxes(Company company) {
     String taxIdNumber = company.getTaxIdentification();
     return TaxCalculatorResult.builder()
-        .income(income(taxIdNumber))
-        .costs(costs(taxIdNumber))
+        .income(getIncome(taxIdNumber))
+        .costs(getCosts(taxIdNumber))
         .earnings(getEarnings(taxIdNumber))
         .pensionInsurance(company.getPensionInsurance())
         .earningsMinusPensionInsurance(getTaxBase(company))
@@ -116,8 +116,9 @@ public class TaxCalculatorService {
         .healthInsuranceToSubtract(getReducedHealthInsurance(company))
         .incomeTaxMinusHealthInsurance(getFinalIncomeTax(company))
         .finalIncomeTax(getRoundedFinalIncomeTax(company))
-
-        .collectedVat(collectedVat(taxIdNumber))
+        .collectedVat(getCollectedVat(taxIdNumber))
+        .paidVat(getPaidVat(taxIdNumber))
+        .vatToReturn(getVatToReturn(taxIdNumber))
         .build();
   }
 }

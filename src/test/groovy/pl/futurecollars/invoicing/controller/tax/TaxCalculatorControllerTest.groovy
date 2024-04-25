@@ -7,6 +7,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.model.Company
+import pl.futurecollars.invoicing.service.TaxCalculatorResult
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
 
@@ -25,14 +26,21 @@ class TaxCalculatorControllerTest extends Specification {
     private JsonService jsonService
 
     def "tax-controller should return 200 (OK) and null values when no invoices in database"() {
-//        given:
-//        Company company = new Company();
-//        def companyAsJson = jsonService.toJson(company)
+        given:
+        def company = Company.builder()
+                .address("00-100 Warszawa, Polna 7")
+                .healthInsurance(BigDecimal.ZERO)
+                .name("No Name S.A.")
+                .pensionInsurance(BigDecimal.ZERO)
+                .taxIdentification("444-333-22-11")
+                .build()
+
+        def companyAsJson = jsonService.toJson(company)
 
         when:
         def expResponse = mvc.perform(
                 post("/tax/company/")
-                .content()
+                .content(companyAsJson)
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
@@ -40,40 +48,79 @@ class TaxCalculatorControllerTest extends Specification {
                 .response
                 .contentAsString
 
+        def response = jsonService.toObject(expResponse, TaxCalculatorResult.class)
+
         then:
-        expResponse == "{\"incomingVat\":0,\"outgoingVat\":0,\"income\":0,\"costs\":0,\"earnings\":0,\"vatToPay\":0}"
+        response.income == 0
+        response.costs == 0
+        response.earnings == 0
+        response.pensionInsurance == 0
+        response.earningsMinusPensionInsurance == 0
+        response.earningsMinusPensionInsuranceRounded == 0
+        response.incomeTax == 0
+        response.healthInsurancePaid == 0
+        response.healthInsuranceToSubtract == 0
+        response.incomeTaxMinusHealthInsurance == 0
+        response.finalIncomeTax == 0
+        response.collectedVat == 0
+        response.paidVat == 0
+        response.vatToReturn == 0
     }
 
     def "tax-controller should return tax values for specified tax id number"() {
         given:
-        def invoice = TestHelper.getInvoice()[0]
-        def buyerId = "423-456-78-90"
-        def sellerId = "538-321-55-32"
-        def invoiceAsJson = jsonService.toJson(invoice)
+        def company = Company.builder()
+                .taxIdentification("500-400-30-20")
+                .address("30-200 Krakow, ul.Warszawska 7")
+                .name("SELLER S.A.")
+                .pensionInsurance(BigDecimal.valueOf(514.57))
+                .healthInsurance(BigDecimal.valueOf(319.94))
+                .build()
 
+        def firstInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
+        def secondInvoice = TestHelper.getInvoiceForTaxCalculator()[1]
+        def firstAsJson = jsonService.toJson(firstInvoice)
+        def secondAsJson = jsonService.toJson(secondInvoice)
+        def companyAsJson = jsonService.toJson(company)
+
+        when:
         mvc.perform(
                 post("/invoices/add/")
-                        .content(invoiceAsJson)
+                        .content(firstAsJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
+        mvc.perform(
+                post("/invoices/add/")
+                        .content(secondAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
 
-        when:
-        def expResponse1 = mvc.perform(get("/tax/$buyerId"))
+        def expResponse = mvc.perform(
+                post("/tax/company/")
+                        .content(companyAsJson)
+                        .contentType(MediaType.APPLICATION_JSON)
+        )
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def expResponse2 = mvc.perform(get("/tax/$sellerId"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .response
-                .contentAsString
+        def response = jsonService.toObject(expResponse, TaxCalculatorResult.class)
 
         then:
-        expResponse1 == "{\"incomingVat\":0,\"outgoingVat\":575,\"income\":0,\"costs\":2500,\"earnings\":-2500,\"vatToPay\":-575}"
-
-        and:
-        expResponse2 == "{\"incomingVat\":575,\"outgoingVat\":0,\"income\":2500,\"costs\":0,\"earnings\":2500,\"vatToPay\":575}"
+        response.income == 60490                                // 50 000 + 10 490
+        response.costs == 6229.48                               // 2730 + 3138.55 + 3138.55 * 0.23 * 0.5
+        response.earnings == 54260.52                           // 60 490 - 6229.48
+        response.pensionInsurance == 514.57
+        response.earningsMinusPensionInsurance == 53745.95      // 54260.52 - 514.57
+        response.earningsMinusPensionInsuranceRounded == 53746  // 53746 * 0.19
+        response.incomeTax == 10211.74
+        response.healthInsurancePaid == 319.94
+        response.healthInsuranceToSubtract == 275.50
+        response.incomeTaxMinusHealthInsurance == 9936.24       //10211.74 - 275.50
+        response.finalIncomeTax == 9936
+        response.collectedVat == 13912.70                       // 60490 * 0.23
+        response.paidVat == 988.83                              // 5 * 546 * 0.23 + 3138.55 * 0.23 * 0.5
+        response.vatToReturn == 12923.87                        // 13912.70 - 988.83
     }
 }
