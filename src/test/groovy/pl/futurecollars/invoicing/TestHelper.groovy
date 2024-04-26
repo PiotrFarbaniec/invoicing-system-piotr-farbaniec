@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing
 
+import pl.futurecollars.invoicing.model.Car
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
@@ -50,29 +51,107 @@ class TestHelper {
                 InvoiceEntry.builder()
                         .description("Invoice description No1")
                         .quantity(1)
-                        .price(BigDecimal.valueOf(2500))
+                        .netPrice(BigDecimal.valueOf(2500))
                         .vatValue(BigDecimal.valueOf(575))
                         .vatRate(Vat.VAT_23)
                         .build(),
                 InvoiceEntry.builder()
                         .description("Invoice description No2")
                         .quantity(1)
-                        .price(BigDecimal.valueOf(3000))
+                        .netPrice(BigDecimal.valueOf(3000))
                         .vatValue(BigDecimal.valueOf(240))
                         .vatRate(Vat.VAT_8)
                         .build(),
                 InvoiceEntry.builder()
                         .description("Invoice description No3")
                         .quantity(1)
-                        .price(BigDecimal.valueOf(3500))
+                        .netPrice(BigDecimal.valueOf(3500))
                         .vatValue(BigDecimal.valueOf(175))
                         .vatRate(Vat.VAT_5)
                         .build(),
         ]
+
         def invoices = []
+
         for (int i = 0; i < buyer.size(); i++) {
-            invoices << new Invoice(i + 1, LocalDate.now(), buyer[i], seller[i], List.of(invoiceEntry[i]))
+            invoices << Invoice.builder()
+                    .id(i + 1)
+                    .date(LocalDate.now())
+                    .buyer(buyer[i])
+                    .seller(seller[i])
+                    .entries(List.of(invoiceEntry[i]))
+                    .build()
         }
+        return invoices
+    }
+
+
+    static Invoice[] getInvoiceForTaxCalculator() {
+        def sellingCompany = Company.builder()
+                .taxIdentification("500-400-30-20")
+                .address("30-200 Krakow, ul.Warszawska 7")
+                .name("SELLER S.A.")
+                .build()
+        def buyingCompany = Company.builder()
+                .taxIdentification("100-200-30-40")
+                .address("10-100 Warszawa, ul.Dluga 14")
+                .name("BUYER S.C.")
+                .build()
+
+        def car = Car.builder()
+                .isUsedPrivately(true)
+                .registrationNumber("KK 37071")
+                .build()
+
+        def invoiceEntries = [
+                InvoiceEntry.builder()
+                        .description("Sale of ten laptops")
+                        .quantity(10)
+                        .netPrice(BigDecimal.valueOf(10 * 5000))
+                        .vatValue(BigDecimal.valueOf(10 * 5000 * Vat.VAT_23.rate))
+                        .vatRate(Vat.VAT_23)
+                        .build(),
+                InvoiceEntry.builder()
+                        .description("Sales of documentation management software")
+                        .quantity(10)
+                        .netPrice(BigDecimal.valueOf(10 * 1049))
+                        .vatValue(BigDecimal.valueOf(10 * 1049 * Vat.VAT_23.rate))
+                        .vatRate(Vat.VAT_23)
+                        .build(),
+                InvoiceEntry.builder()
+                        .description("Purchase of office supplies")
+                        .quantity(5)
+                        .netPrice(BigDecimal.valueOf(5 * 546))
+                        .vatValue(BigDecimal.valueOf(5 * 546 * Vat.VAT_23.rate))
+                        .vatRate(Vat.VAT_23)
+                        .build(),
+                InvoiceEntry.builder()
+                        .description("Servicing of the vehicle along with the purchase of parts")
+                        .quantity(1)
+                        .netPrice(BigDecimal.valueOf(3138.55))
+                        .vatValue(BigDecimal.valueOf(1 * 3138.55 * Vat.VAT_23.rate))
+                        .vatRate(Vat.VAT_23)
+                        .carRelatedExpenses(car)
+                        .build(),
+        ]
+
+        def invoices = [
+                Invoice.builder()
+                .id(1)
+                .date(LocalDate.now())
+                .buyer(buyingCompany)
+                .seller(sellingCompany)
+                .entries(List.of(invoiceEntries[0], invoiceEntries[1]))
+                .build(),
+
+                Invoice.builder()
+                .id(2)
+                .date(LocalDate.now())
+                .buyer(sellingCompany)
+                .seller(buyingCompany)
+                .entries(List.of(invoiceEntries[2], invoiceEntries[3]))
+                .build()
+        ]
         return invoices
     }
 }

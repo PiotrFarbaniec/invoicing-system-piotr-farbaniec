@@ -1,11 +1,11 @@
 package pl.futurecollars.invoicing.controller.tax;
 
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.service.TaxCalculatorResult;
 import pl.futurecollars.invoicing.service.TaxCalculatorService;
 
@@ -21,7 +21,7 @@ public class TaxCalculatorController implements TaxCalculatorApi {
   }
 
   @Override
-  public ResponseEntity<TaxCalculatorResult> calulateTaxes(@PathVariable @ApiParam(example = "555-444-33-22") String taxIdNumber) {
-    return ResponseEntity.status(HttpStatus.OK).body(taxCalculatorService.calculateTaxes(taxIdNumber));
+  public ResponseEntity<TaxCalculatorResult> calulateTaxes(@RequestBody Company company) {
+    return ResponseEntity.status(HttpStatus.OK).body(taxCalculatorService.calculateTaxes(company));
   }
 }

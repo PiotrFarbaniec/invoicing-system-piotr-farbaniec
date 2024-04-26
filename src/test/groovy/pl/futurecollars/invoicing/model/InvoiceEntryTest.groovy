@@ -5,12 +5,13 @@ import spock.lang.Specification
 
 class InvoiceEntryTest extends Specification {
 
-    InvoiceEntry invoiceEntry = new InvoiceEntry(
-            "Usługa nabycia oprogramowania",
-            2,
-            BigDecimal.valueOf(2500),
-            BigDecimal.valueOf(575),
-            Vat.VAT_23)
+    InvoiceEntry invoiceEntry = InvoiceEntry.builder()
+            .description("Usługa nabycia oprogramowania")
+            .quantity(2)
+            .netPrice(BigDecimal.valueOf(2500))
+            .vatValue(BigDecimal.valueOf(575))
+            .vatRate(Vat.VAT_23)
+            .build()
 
     def "should get invoice description"() {
         given:
@@ -28,7 +29,7 @@ class InvoiceEntryTest extends Specification {
         BigDecimal currentPrice = BigDecimal.valueOf(2500)
 
         when:
-        BigDecimal expResult = invoiceEntry.getPrice()
+        BigDecimal expResult = invoiceEntry.getNetPrice()
 
         then:
         currentPrice == expResult
@@ -117,11 +118,11 @@ class InvoiceEntryTest extends Specification {
 
         when:
         def price = BigDecimal.valueOf(5000)
-        entry.setPrice(price)
+        entry.setNetPrice(price)
 
         then:
-        price == entry.getPrice()
-        price.toString() == (entry.getPrice().toString())
+        price == entry.getNetPrice()
+        price.toString() == (entry.getNetPrice().toString())
     }
 
     def "setVatValue called should modify Vat value"() {

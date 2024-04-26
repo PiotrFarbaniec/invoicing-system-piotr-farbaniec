@@ -23,7 +23,7 @@ public interface InvoiceApi {
 
   @ApiOperation(value = "Download an invoice by specific id /{number}")
   @GetMapping(value = {"/get/{id}"}, produces = {"application/json;charset=UTF-8"})
-  ResponseEntity<Invoice> getInvoiceById(@PathVariable int id);
+  ResponseEntity<Invoice> getInvoiceById(@PathVariable("id") int id);
 
   @ApiOperation(value = "Save the new invoice in database /{content}")
   @PostMapping(value = {"/add/"}, produces = {"application/json;charset=UTF-8"})
@@ -31,9 +31,9 @@ public interface InvoiceApi {
 
   @ApiOperation(value = "Update an invoice with a specific id /{number}")
   @PutMapping(value = {"/update/{id}"}, produces = {"application/json;charset=UTF-8"})
-  ResponseEntity<String> updateInvoice(@PathVariable int id, @RequestBody Invoice updatedInvoice);
+  ResponseEntity<String> updateInvoice(@PathVariable("id") int id, @RequestBody Invoice updatedInvoice);
 
   @ApiOperation(value = "Delete an invoice with a specific id /{number}")
   @DeleteMapping(value = {"/delete/{id}"}, produces = {"application/json;charset=UTF-8"})
-  ResponseEntity<String> deleteInvoice(@PathVariable int id);
+  ResponseEntity<String> deleteInvoice(@PathVariable("id") int id);
 }

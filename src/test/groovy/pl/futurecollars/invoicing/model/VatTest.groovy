@@ -12,14 +12,17 @@ class VatTest extends Specification {
 
         where:
         vat          || expectedRate
-        Vat.VAT_23   || 23
-        Vat.VAT_8    || 8
-        Vat.VAT_5    || 5
-        Vat.VAT_0    || 0
+        Vat.VAT_23   || 0.23
+        Vat.VAT_19   || 0.19
+        Vat.VAT_9    || 0.09
+        Vat.VAT_8    || 0.08
+        Vat.VAT_7_75 || 0.0775
+        Vat.VAT_5    || 0.05
+        Vat.VAT_0    || 0.0
     }
 
     def "should have correct number of values"() {
         expect:
-        Vat.values().length == 4
+        Vat.values().length == 7
     }
 }
