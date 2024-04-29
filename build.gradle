@@ -17,6 +17,8 @@ buildscript {
         guavaVersion = '31.1-jre'
         springFoxStarterVersion = '3.0.0'
         springFoxUiVersion = '3.0.0'
+        postgreVersion = '42.2.19'
+        flywayVersion = '7.6.0'
     }
 }
 
@@ -76,6 +78,10 @@ dependencies {
 
     implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
     implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
+
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
+    runtimeOnly "org.postgresql:postgresql:${postgreVersion}"
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
 }
 
 java {
@@ -113,7 +119,7 @@ jacocoTestReport {
 
 jacoco {
     toolVersion = "0.8.8"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+    reportsDirectory == layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 jacocoTestReport {
@@ -129,14 +135,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.85
+                minimum = 0.90
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.85
+                minimum = 0.90
             }
         }
     }
@@ -149,3 +155,19 @@ jacocoTestCoverageVerification {
 startScripts {
     dependsOn bootJar
 }
+
+tasks.register('testWithMemoryDatabase', Test) {
+    systemProperty "spring.profiles.active", "memory"
+}
+
+tasks.register('testWithFileDatabase', Test) {
+    systemProperty "spring.profiles.active", "file"
+}
+
+tasks.register('testWithSqlDatabase', Test) {
+    systemProperty "spring.profiles.active", "sql"
+}
+
+check.dependsOn "testWithMemoryDatabase"
+check.dependsOn "testWithFileDatabase"
+//check.dependsOn "testWithSqlDatabase"

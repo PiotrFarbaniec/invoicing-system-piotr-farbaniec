@@ -1,14 +1,24 @@
 server:
   port: 7000
 
-invoicing-system:
-  database: file
-  database.directory: db
-  database.invoices.file: INVOICES.txt
-  database.id.file: ID.txt
+#invoicing-system:
+#  database: file
+#  database.directory: db
+#  database.invoices.file: INVOICES.txt
+#  database.id.file: ID.txt
 
 logging:
   level:
     pl:
       futurecollars:
         invoicing: INFO
+        invoicing.db: DEBUG
+    org:
+      springframework:
+        boot: INFO
+
+spring:
+  profiles:
+    active: memory
+  flyway:
+    enabled: false

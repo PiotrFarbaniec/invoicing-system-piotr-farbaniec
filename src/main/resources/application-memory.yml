@@ -3,9 +3,16 @@ server:
 
 invoicing-system:
   database: memory
+  database.directory: db
+  database.invoices.file: INVOICES.txt
+  database.id.file: ID.txt
 
 logging:
   level:
     pl:
       futurecollars:
         invoicing: INFO
+        invoicing.db: DEBUG
+    org:
+      springframework:
+        boot: INFO

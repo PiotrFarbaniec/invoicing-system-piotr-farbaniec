@@ -12,3 +12,7 @@ logging:
     pl:
       futurecollars:
         invoicing: INFO
+        invoicing.db: DEBUG
+    org:
+      springframework:
+        boot: INFO
