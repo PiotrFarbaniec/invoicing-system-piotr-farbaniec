@@ -1,11 +1,11 @@
 server:
   port: 7000
 
-#invoicing-system:
-#  database: file
-#  database.directory: db
-#  database.invoices.file: INVOICES.txt
-#  database.id.file: ID.txt
+invoicing-system:
+  database: file
+  database.directory: db
+  database.invoices.file: INVOICES.txt
+  database.id.file: ID.txt
 
 logging:
   level:
@@ -18,7 +18,13 @@ logging:
         boot: INFO
 
 spring:
-  profiles:
-    active: memory
-  flyway:
-    enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/invoicing
+    username: postgres
+    password: piotr
+    driver-class-name: org.postgresql.Driver
+
+flyway:
+  locations: classpath:/db/migration
+  database-name: invoicing
+  enabled: true

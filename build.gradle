@@ -18,6 +18,7 @@ buildscript {
         springFoxStarterVersion = '3.0.0'
         springFoxUiVersion = '3.0.0'
         postgreVersion = '42.2.19'
+        H2DatabaseVersion = '1.4.200'
         flywayVersion = '7.6.0'
     }
 }
@@ -76,11 +77,14 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.spockframework:spock-spring:${spockVersion}"
 
+    //Swagger
     implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
     implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
 
+    //Postgresql database and Flyway
     implementation "org.springframework.boot:spring-boot-starter-jdbc"
     runtimeOnly "org.postgresql:postgresql:${postgreVersion}"
+    runtimeOnly "com.h2database:h2:${H2DatabaseVersion}"
     implementation "org.flywaydb:flyway-core:${flywayVersion}"
 }
 
