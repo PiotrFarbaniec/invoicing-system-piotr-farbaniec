@@ -24,7 +24,7 @@ spring:
     password: piotr
     driver-class-name: org.postgresql.Driver
 
-flyway:
-  locations: classpath:/db/migration
-  database-name: invoicing
-  enabled: true
+#flyway:
+#  locations: classpath:/db/migration
+#  database-name: invoicing
+#  enabled: true
