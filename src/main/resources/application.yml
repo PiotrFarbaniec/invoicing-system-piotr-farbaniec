@@ -18,12 +18,8 @@ logging:
         boot: INFO
 
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/invoicing
-    username: postgres
-    password: piotr
-    driver-class-name: org.postgresql.Driver
-
+  flyway:
+    enabled: false
 #flyway:
 #  locations: classpath:/db/migration
 #  database-name: invoicing
