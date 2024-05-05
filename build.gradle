@@ -17,6 +17,9 @@ buildscript {
         guavaVersion = '31.1-jre'
         springFoxStarterVersion = '3.0.0'
         springFoxUiVersion = '3.0.0'
+        postgreVersion = '42.2.19'
+        H2DatabaseVersion = '1.4.200'
+        flywayVersion = '7.6.0'
     }
 }
 
@@ -74,8 +77,15 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.spockframework:spock-spring:${spockVersion}"
 
+    //Swagger
     implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
     implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
+
+    //Postgresql database and Flyway
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
+    runtimeOnly "org.postgresql:postgresql:${postgreVersion}"
+    runtimeOnly "com.h2database:h2:${H2DatabaseVersion}"
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
 }
 
 java {
@@ -129,14 +139,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.85
+                minimum = 0.90
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.85
+                minimum = 0.90
             }
         }
     }
@@ -149,3 +159,19 @@ jacocoTestCoverageVerification {
 startScripts {
     dependsOn bootJar
 }
+
+tasks.register('testWithMemoryDatabase', Test) {
+    systemProperty "spring.profiles.active", "memory"
+}
+
+tasks.register('testWithFileDatabase', Test) {
+    systemProperty "spring.profiles.active", "file"
+}
+
+tasks.register('testWithSqlDatabase', Test) {
+    systemProperty "spring.profiles.active", "sql"
+}
+
+check.dependsOn "testWithMemoryDatabase"
+check.dependsOn "testWithFileDatabase"
+//check.dependsOn "testWithSqlDatabase"

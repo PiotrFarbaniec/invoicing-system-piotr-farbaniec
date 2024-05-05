@@ -12,3 +12,15 @@ logging:
     pl:
       futurecollars:
         invoicing: INFO
+        invoicing.db: DEBUG
+    org:
+      springframework:
+        boot: INFO
+
+spring:
+  flyway:
+    enabled: false
+#flyway:
+#  locations: classpath:/db/migration
+#  database-name: invoicing
+#  enabled: true
