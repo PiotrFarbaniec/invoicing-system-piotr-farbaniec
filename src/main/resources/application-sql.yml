@@ -6,3 +6,6 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
+
+invoicing-system:
+  database: sql

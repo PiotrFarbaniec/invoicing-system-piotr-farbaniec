@@ -7,13 +7,13 @@ CREATE TABLE public.vat
 );
 
 INSERT INTO public.vat (name, vat_rate)
-VALUES  ('VAT 23',   0.230),
-        ('VAT 19',   0.190),
-        ('VAT 9',    0.090),
-        ('VAT 8',    0.080),
-        ('VAT 7.75', 0.775),
-        ('VAT 5',    0.050),
-        ('VAT 0',    0.000);
+VALUES  ('VAT_23',   0.230),
+        ('VAT_19',   0.190),
+        ('VAT_9',    0.090),
+        ('VAT_8',    0.080),
+        ('VAT_7_75', 0.775),
+        ('VAT_5',    0.050),
+        ('VAT_0',    0.000);
 
 ALTER TABLE IF EXISTS public.vat
     OWNER to postgres;

@@ -18,9 +18,8 @@ logging:
         boot: INFO
 
 spring:
+#  profiles:
+#    active: sql    SQL database activation
   flyway:
     enabled: false
-#flyway:
-#  locations: classpath:/db/migration
-#  database-name: invoicing
-#  enabled: true
+

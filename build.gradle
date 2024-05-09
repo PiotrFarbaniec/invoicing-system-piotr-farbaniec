@@ -174,4 +174,4 @@ tasks.register('testWithSqlDatabase', Test) {
 
 check.dependsOn "testWithMemoryDatabase"
 check.dependsOn "testWithFileDatabase"
-//check.dependsOn "testWithSqlDatabase"
+check.dependsOn "testWithSqlDatabase"
