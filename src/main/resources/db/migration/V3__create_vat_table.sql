@@ -15,5 +15,5 @@ VALUES  ('VAT_23',   0.230),
         ('VAT_5',    0.050),
         ('VAT_0',    0.000);
 
-ALTER TABLE IF EXISTS public.vat
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.vat
+--    OWNER to postgres;

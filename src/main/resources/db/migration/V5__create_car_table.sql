@@ -6,5 +6,5 @@ CREATE TABLE public.car
     PRIMARY KEY (id)
 );
 
-ALTER TABLE IF EXISTS public.car
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.car
+--    OWNER to postgres;

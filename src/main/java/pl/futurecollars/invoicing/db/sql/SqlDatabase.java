@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -25,6 +26,7 @@ import pl.futurecollars.invoicing.model.Vat;
 public class SqlDatabase implements Database {
 
   private final JdbcTemplate jdbcTemplate;
+  @Getter
   private final Map<Vat, Integer> vatToId = new HashMap<>();
 
   @PostConstruct
@@ -81,7 +83,7 @@ public class SqlDatabase implements Database {
 
   private void saveEntry(int invoiceId, InvoiceEntry entry) {
     GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-    Optional<Integer> carId = saveCar(entry);
+    Optional<Integer> carId;
     String presentCarSql = """
         INSERT INTO public.invoice_entry
         (description, quantity, net_price, vat_value, vat_rate, car_related_expenses)
@@ -91,6 +93,12 @@ public class SqlDatabase implements Database {
         (description, quantity, net_price, vat_value, vat_rate)
         values (?, ?, ?, ?, ?);""";
 
+    if (Optional.ofNullable(entry.getCarRelatedExpenses()).isPresent()
+        && !entry.getCarRelatedExpenses().getRegistrationNumber().isEmpty()) {
+      carId = saveCar(entry);
+    } else {
+      carId = Optional.empty();
+    }
     if (carId.isPresent()) {
       jdbcTemplate.update(con -> {
         PreparedStatement statement = con.prepareStatement(presentCarSql, new String[] {"id"});
@@ -125,7 +133,7 @@ public class SqlDatabase implements Database {
         (registration_number, is_used_privately)
         values (?, ?);""";
 
-    if (car.isPresent()) {
+    if (car.isPresent() && !car.get().getRegistrationNumber().isEmpty()) {
       jdbcTemplate.update(connection -> {
         PreparedStatement statement = connection.prepareStatement(sqlCar, new String[] {"id"});
         statement.setString(1, car.get().getRegistrationNumber());
@@ -430,9 +438,9 @@ public class SqlDatabase implements Database {
 
       if (isDone) {
         log.debug("Invoice with id {} updated successful", id);
-      } else {
+      } /*else {
         log.debug("Fail while updating of invoice with id {}", id);
-      }
+      }*/
     }
   }
 

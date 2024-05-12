@@ -9,5 +9,5 @@ CREATE TABLE public.company
     PRIMARY KEY (id)
 );
 
-ALTER TABLE IF EXISTS public.company
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.company
+--    OWNER to postgres;

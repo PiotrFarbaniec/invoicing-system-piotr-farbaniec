@@ -172,6 +172,10 @@ tasks.register('testWithSqlDatabase', Test) {
     systemProperty "spring.profiles.active", "sql"
 }
 
+tasks.register('testWithPostgreSqlDatabase', Test) {
+    systemProperty "spring.profiles.active", "postgresql"
+}
+
 check.dependsOn "testWithMemoryDatabase"
 check.dependsOn "testWithFileDatabase"
 check.dependsOn "testWithSqlDatabase"

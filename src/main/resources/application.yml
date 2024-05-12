@@ -18,8 +18,8 @@ logging:
         boot: INFO
 
 spring:
-#  profiles:
-#    active: sql    SQL database activation
+  profiles:
+    active: sql    SQL database activation
   flyway:
     enabled: false
 
