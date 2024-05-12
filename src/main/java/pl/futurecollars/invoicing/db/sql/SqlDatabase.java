@@ -434,17 +434,11 @@ public class SqlDatabase implements Database {
           });
         });
       });
-      isDone = updateEntries(id, updateInvoice.getEntries(), originalInvoice.getEntries());
-
-      if (isDone) {
-        log.debug("Invoice with id {} updated successful", id);
-      } /*else {
-        log.debug("Fail while updating of invoice with id {}", id);
-      }*/
+      updateEntries(id, updateInvoice.getEntries(), originalInvoice.getEntries());
     }
   }
 
-  private boolean updateEntries(int invoiceId, List<InvoiceEntry> updatedEntries, List<InvoiceEntry> originalEntries) {
+  private void updateEntries(int invoiceId, List<InvoiceEntry> updatedEntries, List<InvoiceEntry> originalEntries) {
     final String sqlDeleteConnection = """
         DELETE FROM public.invoice_connected_to_entries
         WHERE invoice_id = """;
@@ -469,7 +463,5 @@ public class SqlDatabase implements Database {
     updatedEntries.stream()
         .forEach(entry -> saveEntry(invoiceId, entry));
     jdbcTemplate.update(sqlInvoices + invoiceId, invoiceId);
-
-    return !updatedEntries.equals(originalEntries);
   }
 }

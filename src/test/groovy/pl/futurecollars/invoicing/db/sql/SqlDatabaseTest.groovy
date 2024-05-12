@@ -1,50 +1,20 @@
 package pl.futurecollars.invoicing.db.sql
 
 import org.flywaydb.core.Flyway
-import org.junit.Before
-import org.junit.jupiter.api.BeforeEach
 import pl.futurecollars.invoicing.TestHelper
 
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
-import org.springframework.jdbc.support.GeneratedKeyHolder
-import org.springframework.jdbc.support.KeyHolder
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.Vat
-import pl.futurecollars.invoicing.utils.JsonService
+import pl.futurecollars.invoicing.model.Car
 import spock.lang.Specification
 
 import javax.sql.DataSource
-import java.sql.Connection
-import java.sql.PreparedStatement
 import java.time.LocalDate
 
-import static java.util.Date.*
 
 class SqlDatabaseTest extends Specification {
-
-    /*Database getDatabaseInstance() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build()
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource)
-
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("db/migration")
-                .load()
-
-        flyway.clean()
-        flyway.migrate()
-
-        def database = new SqlDatabase(jdbcTemplate)
-
-        return database
-    }
-
-    def jdbcTemplate = Mock(JdbcTemplate)
-    def database = new SqlDatabase(jdbcTemplate)*/
 
     Database database
 
@@ -72,7 +42,6 @@ class SqlDatabaseTest extends Specification {
         result == []
         result.size() == 0
         database.getById(1) == Optional.empty()
-
     }
 
     def "when save() method is called then invoice should be saved in database"() {
@@ -87,7 +56,6 @@ class SqlDatabaseTest extends Specification {
         database.save(secondInvoice)
         def firstSavedInvoice = database.getById(1).get()
         def secondSavedInvoice = database.getById(2).get()
-
 
         then:
         database.getAll().size() == 2
@@ -115,7 +83,6 @@ class SqlDatabaseTest extends Specification {
         database.getById(2).get().entries.size() == secondInvoice.entries.size()
         database.getById(2).get().entries[0].description == secondInvoice.entries[0].description
         database.getById(2).get().entries[1].description == secondInvoice.entries[1].description
-
     }
 
     def "update() method called should update existing invoice"() {
@@ -144,8 +111,50 @@ class SqlDatabaseTest extends Specification {
         originalInvoice.entries[1].description != updatedInvoice.entries[1].description
         updatedInvoice.entries[1].description == "New description of second invoice entry"
         originalInvoice.entries.size() == updatedInvoice.entries.size()
-
     }
 
+    /*def "update() method called should not update if invoice not exist"() {
+        given:
+        def originalInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
+        database.save(originalInvoice)
+        def updatedDate = LocalDate.of(2023, 10, 23)
+        def updatedNumber = "2023_ZW88888"
+        def updateDescription1 = "New description of first invoice entry"
+        def updateDescription2 = "New description of second invoice entry"
+        def updatedInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
 
+        updatedInvoice.setDate(updatedDate)
+        updatedInvoice.setNumber(updatedNumber)
+        updatedInvoice.getEntries()[0].setDescription(updateDescription1)
+        updatedInvoice.getEntries()[1].setDescription(updateDescription2)
+
+        when:
+        database.update(2, updatedInvoice)
+
+        then:
+        originalInvoice.date == updatedInvoice.date
+        originalInvoice.number == updatedInvoice.number
+        originalInvoice.entries[0].description == updatedInvoice.entries[0].description
+        updatedInvoice.entries[0].description != "New description of first invoice entry"
+        originalInvoice.entries[1].description == updatedInvoice.entries[1].description
+        updatedInvoice.entries[1].description != "New description of second invoice entry"
+        originalInvoice.entries.size() != updatedInvoice.entries.size()
+    }*/
+
+    /*def "should not save a car if registration number field is empty"() {
+        given:
+        def invoice = TestHelper.getInvoiceForTaxCalculator()[0]
+        def emptyCar = Car.builder()
+        .registrationNumber("")
+        .isUsedPrivately(true)
+
+        invoice.entries[0].setCarRelatedExpenses(Optional.ofNullable(emptyCar))
+
+        when:
+        def savedInvoice = database.save(invoice)
+
+        then:
+        savedInvoice.entries[0].carRelatedExpenses.registrationNumber.empty
+        savedInvoice.entries[0].carRelatedExpenses.isUsedPrivately() == false
+    }*/
 }
