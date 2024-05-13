@@ -13,5 +13,5 @@ ALTER TABLE public.invoice_entry
     ADD CONSTRAINT vat_rate_fk FOREIGN KEY (vat_rate)
     REFERENCES public.vat (id);
 
-ALTER TABLE IF EXISTS public.invoice_entry
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.invoice_entry
+--    OWNER to postgres;

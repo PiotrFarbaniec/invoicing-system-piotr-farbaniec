@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import pl.futurecollars.invoicing.db.file.FileBasedDatabase;
 import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase;
+import pl.futurecollars.invoicing.db.sql.SqlDatabase;
 import pl.futurecollars.invoicing.utils.FileManager;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
@@ -44,7 +46,7 @@ public class DatabaseConfiguration {
       @Value("${invoicing-system.database.directory}") String databaseDirectory,
       @Value("${invoicing-system.database.id.file}") String idFile,
       @Value("${invoicing-system.database.invoices.file}") String invoicesFile) throws IOException {
-    log.info("RUN USING THE FILE DATABASE");
+    log.info("CURRENTLY THE APPLICATION WORKS WITH A FILE DATABASE");
     return new FileBasedDatabase(
         fileManager,
         fileService,
@@ -56,7 +58,14 @@ public class DatabaseConfiguration {
   @Bean
   @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "memory", matchIfMissing = true)
   public Database memoryDatabase() {
-    log.info("RUN USING THE MEMORY DATABASE");
+    log.info("CURRENTLY THE APPLICATION WORKS WITH A MEMORY DATABASE");
     return new InMemoryDatabase();
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = {"invoicing-system.database"}, havingValue = "sql")
+  public Database sqlDatabase(JdbcTemplate jdbcTemplate) {
+    log.info("CURRENTLY THE APPLICATION WORKS WITH AN SQL DATABASE");
+    return new SqlDatabase(jdbcTemplate);
   }
 }

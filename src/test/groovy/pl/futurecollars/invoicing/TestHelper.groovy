@@ -138,6 +138,7 @@ class TestHelper {
         def invoices = [
                 Invoice.builder()
                 .id(1)
+                .number("2022/10/12_FK111111")
                 .date(LocalDate.now())
                 .buyer(buyingCompany)
                 .seller(sellingCompany)
@@ -146,6 +147,7 @@ class TestHelper {
 
                 Invoice.builder()
                 .id(2)
+                .number("2022/05/05_TF222222")
                 .date(LocalDate.now())
                 .buyer(sellingCompany)
                 .seller(buyingCompany)

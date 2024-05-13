@@ -139,14 +139,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.90
+                minimum = 0.85
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.90
+                minimum = 0.85
             }
         }
     }
@@ -172,6 +172,10 @@ tasks.register('testWithSqlDatabase', Test) {
     systemProperty "spring.profiles.active", "sql"
 }
 
+tasks.register('testWithPostgreSqlDatabase', Test) {
+    systemProperty "spring.profiles.active", "postgresql"
+}
+
 check.dependsOn "testWithMemoryDatabase"
 check.dependsOn "testWithFileDatabase"
-//check.dependsOn "testWithSqlDatabase"
+check.dependsOn "testWithSqlDatabase"

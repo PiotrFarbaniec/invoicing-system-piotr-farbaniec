@@ -12,11 +12,3 @@ ALTER TABLE public.invoices
 ALTER TABLE public.invoices
     ADD CONSTRAINT seller_fk FOREIGN KEY (seller)
     REFERENCES public.company (id);
-
-
-ALTER TABLE public.invoices
-    ADD COLUMN invoice_entry bigint NOT NULL;
-
-ALTER TABLE public.invoices
-    ADD CONSTRAINT invoice_entry_fk FOREIGN KEY (invoice_entry)
-    REFERENCES public.invoice_entry (id);
