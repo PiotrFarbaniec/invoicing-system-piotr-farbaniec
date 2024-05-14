@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
+  datasource:
+    url: jdbc:h2:mem:db-jpa;DB_CLOSE_DELAY=-1
+    username: user
+    password:
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: false
+
+invoicing-system:
+  database: jpa
