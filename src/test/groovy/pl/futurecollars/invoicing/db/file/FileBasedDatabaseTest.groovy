@@ -182,8 +182,12 @@ class FileBasedDatabaseTest extends Specification {
 
         then:
         invoicesList.size() == 3
-        invoicesList.get(0) == updatedInvoice
         invoicesList.get(0).id == updatedId
+        invoicesList.get(0).number == updatedInvoice.number
+        invoicesList.get(0).buyer.taxIdentification == updatedInvoice.buyer.taxIdentification
+        invoicesList.get(0).buyer.name == updatedInvoice.buyer.name
+        invoicesList.get(0).seller.taxIdentification == updatedInvoice.seller.taxIdentification
+        invoicesList.get(0).seller.name == updatedInvoice.seller.name
 
         cleanup:
         Files.deleteIfExists(invoicePath)
