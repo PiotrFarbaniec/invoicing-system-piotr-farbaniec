@@ -1,22 +1,22 @@
 package pl.futurecollars.invoicing.db.sql
 
 import org.flywaydb.core.Flyway
+import org.springframework.test.annotation.IfProfileValue
 import pl.futurecollars.invoicing.TestHelper
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.model.Car
 import spock.lang.Specification
 
 import javax.sql.DataSource
 import java.time.LocalDate
 
-
+@IfProfileValue(name = "spring.profile.active", values = ["sql"])
 class SqlDatabaseTest extends Specification {
 
-    Database database
+    private Database database
 
     void setup() {
         DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build()
@@ -112,49 +112,4 @@ class SqlDatabaseTest extends Specification {
         updatedInvoice.entries[1].description == "New description of second invoice entry"
         originalInvoice.entries.size() == updatedInvoice.entries.size()
     }
-
-    /*def "update() method called should not update if invoice not exist"() {
-        given:
-        def originalInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
-        database.save(originalInvoice)
-        def updatedDate = LocalDate.of(2023, 10, 23)
-        def updatedNumber = "2023_ZW88888"
-        def updateDescription1 = "New description of first invoice entry"
-        def updateDescription2 = "New description of second invoice entry"
-        def updatedInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
-
-        updatedInvoice.setDate(updatedDate)
-        updatedInvoice.setNumber(updatedNumber)
-        updatedInvoice.getEntries()[0].setDescription(updateDescription1)
-        updatedInvoice.getEntries()[1].setDescription(updateDescription2)
-
-        when:
-        database.update(2, updatedInvoice)
-
-        then:
-        originalInvoice.date == updatedInvoice.date
-        originalInvoice.number == updatedInvoice.number
-        originalInvoice.entries[0].description == updatedInvoice.entries[0].description
-        updatedInvoice.entries[0].description != "New description of first invoice entry"
-        originalInvoice.entries[1].description == updatedInvoice.entries[1].description
-        updatedInvoice.entries[1].description != "New description of second invoice entry"
-        originalInvoice.entries.size() != updatedInvoice.entries.size()
-    }*/
-
-    /*def "should not save a car if registration number field is empty"() {
-        given:
-        def invoice = TestHelper.getInvoiceForTaxCalculator()[0]
-        def emptyCar = Car.builder()
-        .registrationNumber("")
-        .isUsedPrivately(true)
-
-        invoice.entries[0].setCarRelatedExpenses(Optional.ofNullable(emptyCar))
-
-        when:
-        def savedInvoice = database.save(invoice)
-
-        then:
-        savedInvoice.entries[0].carRelatedExpenses.registrationNumber.empty
-        savedInvoice.entries[0].carRelatedExpenses.isUsedPrivately() == false
-    }*/
 }
