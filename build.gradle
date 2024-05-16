@@ -34,9 +34,9 @@ plugins {
 
     id 'jacoco'
 
-    id 'org.springframework.boot' version'2.4.2'
+    id 'org.springframework.boot' version '2.4.2'
 
-    id 'io.spring.dependency-management' version'1.0.11.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
 repositories {
@@ -86,6 +86,9 @@ dependencies {
     runtimeOnly "org.postgresql:postgresql:${postgreVersion}"
     runtimeOnly "com.h2database:h2:${H2DatabaseVersion}"
     implementation "org.flywaydb:flyway-core:${flywayVersion}"
+
+    //JPA database
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 }
 
 java {
@@ -139,14 +142,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.85
+                minimum = 0.90
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.85
+                minimum = 0.90
             }
         }
     }
@@ -172,10 +175,11 @@ tasks.register('testWithSqlDatabase', Test) {
     systemProperty "spring.profiles.active", "sql"
 }
 
-tasks.register('testWithPostgreSqlDatabase', Test) {
-    systemProperty "spring.profiles.active", "postgresql"
+tasks.register('testWithJpaDatabase', Test) {
+    systemProperty "spring.profiles.active", "jpa"
 }
 
 check.dependsOn "testWithMemoryDatabase"
 check.dependsOn "testWithFileDatabase"
 check.dependsOn "testWithSqlDatabase"
+check.dependsOn "testWithJpaDatabase"

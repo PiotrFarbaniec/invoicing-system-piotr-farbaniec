@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -26,7 +25,6 @@ import pl.futurecollars.invoicing.model.Vat;
 public class SqlDatabase implements Database {
 
   private final JdbcTemplate jdbcTemplate;
-  @Getter
   private final Map<Vat, Integer> vatToId = new HashMap<>();
 
   @PostConstruct
@@ -94,7 +92,7 @@ public class SqlDatabase implements Database {
         values (?, ?, ?, ?, ?);""";
 
     if (Optional.ofNullable(entry.getCarRelatedExpenses()).isPresent()
-        && !entry.getCarRelatedExpenses().getRegistrationNumber().isEmpty()) {
+        && !entry.getCarRelatedExpenses().getRegistrationNumber().isBlank()) {
       carId = saveCar(entry);
     } else {
       carId = Optional.empty();
@@ -133,17 +131,13 @@ public class SqlDatabase implements Database {
         (registration_number, is_used_privately)
         values (?, ?);""";
 
-    if (car.isPresent() && !car.get().getRegistrationNumber().isEmpty()) {
-      jdbcTemplate.update(connection -> {
-        PreparedStatement statement = connection.prepareStatement(sqlCar, new String[] {"id"});
-        statement.setString(1, car.get().getRegistrationNumber());
-        statement.setBoolean(2, car.get().isUsedPrivately());
-        return statement;
-      }, generatedKeyHolder);
-      return Optional.of(Objects.requireNonNull(generatedKeyHolder.getKey()).intValue());
-    } else {
-      return Optional.empty();
-    }
+    jdbcTemplate.update(connection -> {
+      PreparedStatement statement = connection.prepareStatement(sqlCar, new String[] {"id"});
+      statement.setString(1, car.get().getRegistrationNumber());
+      statement.setBoolean(2, car.get().isUsedPrivately());
+      return statement;
+    }, generatedKeyHolder);
+    return Optional.of(Objects.requireNonNull(generatedKeyHolder.getKey()).intValue());
   }
 
   private void saveIdKeysToConnectedTable(int invoiceId, int entryId) {

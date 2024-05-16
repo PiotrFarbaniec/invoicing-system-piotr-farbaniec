@@ -108,19 +108,19 @@ class TaxCalculatorControllerTest extends Specification {
         def response = jsonService.toObject(expResponse, TaxCalculatorResult.class)
 
         then:
-        response.income == 60490                                // 50 000 + 10 490
-        response.costs == 6229.48                               // 2730 + 3138.55 + 3138.55 * 0.23 * 0.5
-        response.earnings == 54260.52                           // 60 490 - 6229.48
+        response.income == 60490.00                                // 50 000 + 10 490
+        response.costs == 6229.48                                  // 2730 + 3138.55 + 3138.55 * 0.23 * 0.5
+        response.earnings == 54260.52                              // 60 490 - 6229.48
         response.pensionInsurance == 514.57
-        response.earningsMinusPensionInsurance == 53745.95      // 54260.52 - 514.57
-        response.earningsMinusPensionInsuranceRounded == 53746  // 53746 * 0.19
+        response.earningsMinusPensionInsurance == 53745.95         // 54260.52 - 514.57
+        response.earningsMinusPensionInsuranceRounded == 53746.00  // 53746 * 0.19
         response.incomeTax == 10211.74
         response.healthInsurancePaid == 319.94
         response.healthInsuranceToSubtract == 275.50
-        response.incomeTaxMinusHealthInsurance == 9936.24       //10211.74 - 275.50
-        response.finalIncomeTax == 9936
-        response.collectedVat == 13912.70                       // 60490 * 0.23
-        response.paidVat == 988.83                              // 5 * 546 * 0.23 + 3138.55 * 0.23 * 0.5
-        response.vatToReturn == 12923.87                        // 13912.70 - 988.83
+        response.incomeTaxMinusHealthInsurance == 9936.24           //10211.74 - 275.50
+        response.finalIncomeTax == 9936.00
+        response.collectedVat == 13912.70                           // 60490 * 0.23
+        response.paidVat == 988.83                                  // 5 * 546 * 0.23 + 3138.55 * 0.23 * 0.5
+        response.vatToReturn == 12923.87                            // 13912.70 - 988.83
     }
 }

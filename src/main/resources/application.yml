@@ -19,7 +19,6 @@ logging:
 
 spring:
   profiles:
-    active: sql    SQL database activation
+    active: jpa
   flyway:
     enabled: false
-
