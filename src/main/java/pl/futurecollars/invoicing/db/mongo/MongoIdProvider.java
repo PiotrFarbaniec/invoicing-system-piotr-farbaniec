@@ -21,7 +21,7 @@ public class MongoIdProvider {
   private long lastValue = 0;
 
   @PostConstruct
-  private void postConstruct() {
+  void postConstruct() {
     var iterator = collection.find(FILTER_DOCUMENT).iterator();
     if (iterator.hasNext()) {
       lastValue = (long) iterator.next().get(LAST_VALUE_KEY);
