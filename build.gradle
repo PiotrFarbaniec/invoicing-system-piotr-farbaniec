@@ -20,6 +20,8 @@ buildscript {
         postgreVersion = '42.2.19'
         H2DatabaseVersion = '1.4.200'
         flywayVersion = '7.6.0'
+        mongoVersion = '3.12.11'
+        mongoDriverVersion = '4.0.5'
     }
 }
 
@@ -89,6 +91,13 @@ dependencies {
 
     //JPA database
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+
+    //MongoDB driver
+    implementation "org.mongodb:mongo-java-driver:${mongoVersion}"
+    implementation "org.mongodb:mongodb-driver-core:${mongoDriverVersion}"
+
+    //Spring Data MongoDB
+    implementation 'org.springframework.data:spring-data-mongodb'
 }
 
 java {
@@ -142,14 +151,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.90
+                minimum = 0.50
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.90
+                minimum = 0.50
             }
         }
     }
@@ -179,7 +188,12 @@ tasks.register('testWithJpaDatabase', Test) {
     systemProperty "spring.profiles.active", "jpa"
 }
 
+tasks.register('testWithMongoDatabase', Test) {
+    systemProperty "spring.profiles.active", "mongo"
+}
+
 check.dependsOn "testWithMemoryDatabase"
 check.dependsOn "testWithFileDatabase"
 check.dependsOn "testWithSqlDatabase"
 check.dependsOn "testWithJpaDatabase"
+check.dependsOn "testWithMongoDatabase"

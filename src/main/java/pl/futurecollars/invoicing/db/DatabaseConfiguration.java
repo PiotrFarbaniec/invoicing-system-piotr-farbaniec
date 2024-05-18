@@ -1,9 +1,20 @@
 package pl.futurecollars.invoicing.db;
 
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +25,10 @@ import pl.futurecollars.invoicing.db.file.IdService;
 import pl.futurecollars.invoicing.db.jpa.InvoiceRepository;
 import pl.futurecollars.invoicing.db.jpa.JpaDatabase;
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase;
+import pl.futurecollars.invoicing.db.mongo.MongoBasedDatabase;
+import pl.futurecollars.invoicing.db.mongo.MongoIdProvider;
 import pl.futurecollars.invoicing.db.sql.SqlDatabase;
+import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileManager;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
@@ -76,5 +90,39 @@ public class DatabaseConfiguration {
   public Database jpaDatabase(InvoiceRepository repository) {
     log.info("CURRENTLY THE APPLICATION WORKS WITH JPA DATABASE");
     return new JpaDatabase(repository);
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = {"invoicing-system.database"}, havingValue = "mongo")
+  public MongoDatabase mongoDB(
+      @Value("${invoicing-system.database.database-name}") String databaseName) {
+    CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+        fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+    MongoClientSettings settings = MongoClientSettings.builder()
+        .codecRegistry(pojoCodecRegistry)
+        .build();
+    MongoClient client = MongoClients.create(settings);
+    log.debug("MONGO DATABASE CODECS REGISTERING");
+    return client.getDatabase(databaseName);
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = {"invoicing-system.database"}, havingValue = "mongo")
+  public MongoIdProvider mongoIdProvider(
+      @Value("${invoicing-system.database.counter-name}")
+      String counterName, MongoDatabase mongoDB) {
+    MongoCollection<Document> collection = mongoDB.getCollection(counterName);
+    log.debug("CREATING ID PROVIDER FOR MONGO DATABASE");
+    return new MongoIdProvider(collection);
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = {"invoicing-system.database"}, havingValue = "mongo")
+  public Database mongoDatabase(
+      @Value("${invoicing-system.database.collection-name}") String collectionName,
+      MongoDatabase mongoDB, MongoIdProvider mongoIdProvider) {
+    MongoCollection<Invoice> collection = mongoDB.getCollection(collectionName, Invoice.class);
+    log.info("CURRENTLY THE APPLICATION WORKS WITH MONGO DATABASE");
+    return new MongoBasedDatabase(collection, mongoIdProvider);
   }
 }
