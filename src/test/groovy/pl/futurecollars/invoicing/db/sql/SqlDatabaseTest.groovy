@@ -67,7 +67,7 @@ class SqlDatabaseTest extends Specification {
         firstSavedInvoice.entries[1].description == firstInvoice.entries[1].description
     }
 
-    def "when delete() an invoice should be removed if exist"() {
+    def "invoice should be removed if exist"() {
         given:
         def firstInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
         def secondInvoice = TestHelper.getInvoiceForTaxCalculator()[1]
@@ -83,6 +83,21 @@ class SqlDatabaseTest extends Specification {
         database.getById(2).get().entries.size() == secondInvoice.entries.size()
         database.getById(2).get().entries[0].description == secondInvoice.entries[0].description
         database.getById(2).get().entries[1].description == secondInvoice.entries[1].description
+    }
+
+    def "no invoice should be removed if specified id does not exist"() {
+        given:
+        def firstInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
+        def secondInvoice = TestHelper.getInvoiceForTaxCalculator()[1]
+        database.save(firstInvoice)
+        database.save(secondInvoice)
+        def storedInvoicesNumber = database.getAll().size()
+
+        when:
+        database.delete(5)
+
+        then:
+        storedInvoicesNumber == database.getAll().size()
     }
 
     def "update() method called should update existing invoice"() {
@@ -111,5 +126,28 @@ class SqlDatabaseTest extends Specification {
         originalInvoice.entries[1].description != updatedInvoice.entries[1].description
         updatedInvoice.entries[1].description == "New description of second invoice entry"
         originalInvoice.entries.size() == updatedInvoice.entries.size()
+    }
+
+    def "update() method called should not update if invoice does not exist"() {
+        given:
+        def originalInvoice = TestHelper.getInvoiceForTaxCalculator()[0]
+        database.save(originalInvoice)
+        def updatedInvoice = TestHelper.getInvoiceForTaxCalculator()[1]
+        updatedInvoice.setId(4)
+        def originalInvoicesNumber = database.getAll().size()
+
+        when:
+        database.update(4, updatedInvoice)
+
+        then:
+        originalInvoicesNumber == database.getAll().size()
+        originalInvoice.number == database.getById(1).get().number
+        originalInvoice.buyer.taxIdentification == database.getById(1).get().buyer.taxIdentification
+        originalInvoice.seller.taxIdentification == database.getById(1).get().seller.taxIdentification
+        originalInvoice.entries.size() == database.getById(1).get().entries.size()
+        originalInvoice.entries[0].description == database.getById(1).get().entries[0].description
+        originalInvoice.entries[1].description == database.getById(1).get().entries[1].description
+
+        database.getById(4) == Optional.empty()
     }
 }

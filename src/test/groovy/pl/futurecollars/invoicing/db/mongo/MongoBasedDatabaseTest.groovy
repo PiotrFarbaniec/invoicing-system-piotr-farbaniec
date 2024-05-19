@@ -57,17 +57,28 @@ class MongoBasedDatabaseTest extends Specification {
 
         idProvider = new MongoIdProvider(idCollection)
         database = new MongoBasedDatabase(invoiceCollection, idProvider)
+        idProvider.postConstruct()
     }
+
     def cleanup() {
-        database.all.clear()
+        database.getAll().stream()
+        .forEach(invoice-> database.delete(invoice.id))
         mongoDbExecutable.stop()
+    }
+
+    def "should return no invoices if database is empty"() {
+        when:
+        def invoices = database.getAll()
+
+        then:
+        invoices.size() == 0
     }
 
     def "should save given invoice in database"() {
         given:
-        Invoice firstInvoice = TestHelper.getInvoice()[0]
-        Invoice secondInvoice = TestHelper.getInvoice()[1]
-        Invoice thirdInvoice = TestHelper.getInvoice()[2]
+        Invoice firstInvoice = new Invoice()
+        Invoice secondInvoice = new Invoice()
+        Invoice thirdInvoice = new Invoice()
 
         when:
         int id1 = database.save(firstInvoice)
@@ -85,120 +96,115 @@ class MongoBasedDatabaseTest extends Specification {
         Optional<Invoice> thirdRetrievedInvoice = database.getById(id3)
         thirdRetrievedInvoice.isPresent()
         thirdRetrievedInvoice.get() == thirdInvoice
+
+        cleanup:
+        database.getAll().stream()
+        .forEach(invoice-> database.delete(invoice.id))
     }
 
-    // Dodaj więcej testów dla innych metod...
-}
-
-
-
-    /*private Database database
-    private MongoCollection<Invoice> invoiceCollection
-    private MongoIdProvider idProvider
-    private Invoice firstInvoice = TestHelper.getInvoice()[0]
-    private Invoice secondInvoice = TestHelper.getInvoice()[1]
-    private Invoice thirdInvoice = TestHelper.getInvoice()[2]
-
-    void setup() {
-        invoiceCollection = Mock(MongoCollection)
-        idProvider = Mock(MongoIdProvider)
-        database = new MongoBasedDatabase(invoiceCollection, idProvider)
-    }
-
-    def "should save invoice"() {
+    def "should get all invoices stored in database"() {
         given:
-        idProvider.getNextIdAndIncrement() >> 1L >> 2L >> 3L
-
-        when:
+        Invoice firstInvoice = TestHelper.getInvoice()[0]
+        Invoice secondInvoice = TestHelper.getInvoice()[1]
+        Invoice thirdInvoice = TestHelper.getInvoice()[2]
         database.save(firstInvoice)
         database.save(secondInvoice)
         database.save(thirdInvoice)
 
-        then:
-        1 * invoiceCollection.insertOne(firstInvoice)
-        1 * invoiceCollection.insertOne(secondInvoice)
-        1 * invoiceCollection.insertOne(thirdInvoice)
-
-    }
-
-    def "should get all invoices"() {
         when:
-        database.getAll()
-        FindIterable findIterable = Mock(FindIterable)
-        invoiceCollection.find(_) >> findIterable
+        def invoices = database.getAll()
 
         then:
-        1 * invoiceCollection.find() == [3]
-    }
-
-    def "should get invoice by id"() {
-        given:
-        int id = 1
-        invoiceCollection.find(_) >> new FindIterableImpl<>(null, null)
-
-        when:
-        database.getById(id)
-
-        then:
-        1 * invoiceCollection.find(_ as Bson)
-    }
-
-    def "should update invoice"() {
-        given:
-        int id = 1
-        invoiceCollection.find(_) >> new FindIterableImpl<>(null, null)
-
-        when:
-        database.update(id, invoice)
-
-        then:
-        1 * invoiceCollection.findOneAndReplace(_ as Bson, invoice)
-    }
-
-    def "should delete invoice"() {
-        given:
-        int id = 1
-        invoiceCollection.find(_) >> new FindIterableImpl<>(null, null)
-
-        when:
-        database.delete(id)
-
-        then:
-        1 * invoiceCollection.deleteOne(_ as Bson)
-    }*/
-
-
-
-
-
-/*    def "should save and retrieve invoice"() {
-        given: "A running mongo container and a database instance"
-        def mongoContainer = new GenericContainer('mongo:4.0.5')
-                .withExposedPorts(27017)
-        mongoContainer.start()
-
-        MongoClient mongoClient = MongoClients.create(
-                new ConnectionString("mongodb://" + mongoContainer.getHost() + ":" + mongoContainer.getFirstMappedPort())
-        )
-        *//*MongoClient mongoClient = new MongoClient(mongoContainer.containerIpAddress, mongoContainer.firstMappedPort)*//*
-        MongoDatabase database = mongoClient.getDatabase("test")
-        MongoCollection<Document> idCollection = database.getCollection("id")
-        MongoIdProvider idProvider = new MongoIdProvider(idCollection)
-        MongoCollection<Invoice> invoiceCollection = database.getCollection("invoices", Invoice.class)
-        Database mongoDatabase = new MongoBasedDatabase(invoiceCollection, idProvider)
-
-        and: "An invoice"
-        def invoice = TestHelper.getInvoice()[0]*//*new Invoice(*//*/* initialize invoice *//*/*)*//*
-
-        when: "Invoice is saved"
-        int id = mongoDatabase.save(invoice)
-
-        then: "Invoice can be retrieved by id"
-        Optional<Invoice> retrievedInvoice = mongoDatabase.getById(id)
-        retrievedInvoice.isPresent()
-        retrievedInvoice.get() == invoice
+        invoices.size() == 3
+        invoices.get(0) == firstInvoice
+        invoices.get(1) == secondInvoice
+        invoices.get(2) == thirdInvoice
 
         cleanup:
-        mongoContainer.stop()
-    }*/
+        database.getAll().stream()
+                .forEach(invoice-> database.delete(invoice.id))
+    }
 
+    def "should return no content if searched invoice does not exist"() {
+        when:
+        def searchedInvoice = database.getById(1)
+
+        then:
+        searchedInvoice == Optional.empty()
+    }
+
+    def "should delete an invoice with specified id if exist"() {
+        given:
+        Invoice firstInvoice = TestHelper.getInvoice()[0]
+        Invoice secondInvoice = TestHelper.getInvoice()[1]
+        database.save(firstInvoice)
+        database.save(secondInvoice)
+
+        when:
+        database.delete(firstInvoice.getId())
+        database.delete(secondInvoice.getId())
+
+        then:
+        database.getAll() == []
+        database.getById(firstInvoice.id) == Optional.empty()
+        database.getById(secondInvoice.id) == Optional.empty()
+    }
+
+    def "should not delete if invoice with specified id does not exist"() {
+        given:
+        Invoice firstInvoice = TestHelper.getInvoice()[0]
+        database.save(firstInvoice)
+
+        when:
+        database.delete(2)
+        def originalSize = database.getAll().size()
+
+        then:
+        database.getAll().size() == originalSize
+
+        cleanup:
+        database.getAll().stream()
+                .forEach(invoice-> database.delete(invoice.id))
+    }
+
+    def "should update existed invoice"() {
+        given:
+        Invoice firstInvoice = new Invoice()
+        Invoice secondInvoice = new Invoice()
+
+        database.save(firstInvoice)
+        database.save(secondInvoice)
+        def updatedInvoice = TestHelper.getInvoice()[2]
+
+        when:
+        database.update(secondInvoice.id, updatedInvoice)
+        def resultInvoice =  database.getById(secondInvoice.getId()).get()
+
+
+        then:
+        resultInvoice.number == updatedInvoice.number
+        resultInvoice.seller == updatedInvoice.seller
+        resultInvoice.buyer == updatedInvoice.buyer
+        resultInvoice.entries.size() == updatedInvoice.entries.size()
+
+        cleanup:
+        database.getAll().stream()
+                .forEach(invoice-> database.delete(invoice.id))
+    }
+
+    def "should not update if invoice with specified id does not exist"() {
+        given:
+        def updatedInvoice = TestHelper.getInvoice()[2]
+        updatedInvoice.setId(1)
+
+        when:
+        database.update(1, updatedInvoice)
+
+        then:
+        database.getById(1) == Optional.empty()
+
+        cleanup:
+        database.getAll().stream()
+                .forEach(invoice-> database.delete(invoice.id))
+    }
+}
