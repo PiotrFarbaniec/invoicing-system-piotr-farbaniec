@@ -25,7 +25,7 @@ public class InvoiceController implements InvoiceApi {
   @Override
   public ResponseEntity<List<Invoice>> getAllInvoices() {
     List<Invoice> invoicesList = service.getAll();
-    if (invoicesList == null || invoicesList.isEmpty()) {
+    if (invoicesList.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } else {
       return ResponseEntity.status(HttpStatus.OK).body(invoicesList);

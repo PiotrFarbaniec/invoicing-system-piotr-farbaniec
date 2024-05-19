@@ -342,22 +342,22 @@ public class SqlDatabase implements Database {
         DELETE FROM public.invoices
         WHERE id = """ + id;
 
-    Invoice removedInvoice = getById(id).get();
+    if (getById(id).isPresent()) {
+      Invoice removedInvoice = getById(id).get();
 
-    List<Integer> companiesId =
-        List.of(removedInvoice.getBuyer().getId(), removedInvoice.getSeller().getId());
+      final List<Integer> companiesId =
+          List.of(removedInvoice.getBuyer().getId(), removedInvoice.getSeller().getId());
 
-    List<Integer> entriesId =
-        removedInvoice.getEntries().stream()
-            .map(InvoiceEntry::getId)
-            .collect(Collectors.toList());
+      final List<Integer> entriesId =
+          removedInvoice.getEntries().stream()
+              .map(InvoiceEntry::getId)
+              .collect(Collectors.toList());
 
-    Optional<List<Integer>> carsId =
-        Optional.of(removedInvoice.getEntries().stream()
-            .map(InvoiceEntry::getCarRelatedExpenses)
-            .map(Car::getId).collect(Collectors.toList()));
+      final Optional<List<Integer>> carsId =
+          Optional.of(removedInvoice.getEntries().stream()
+              .map(InvoiceEntry::getCarRelatedExpenses)
+              .map(Car::getId).collect(Collectors.toList()));
 
-    if (getById(id).isPresent() && removedInvoice.getId() == id) {
       jdbcTemplate.update(sqlDeleteCon);
       jdbcTemplate.update(sqlDeleteInv);
       removeOrphanedEntries(entriesId);
@@ -389,7 +389,6 @@ public class SqlDatabase implements Database {
 
   @Override
   public void update(int id, Invoice updateInvoice) {
-    boolean isDone = false;
     String sqlInvoiceUpdate = """
         UPDATE public.invoices SET
         number = ?, date = ?
@@ -400,12 +399,12 @@ public class SqlDatabase implements Database {
         pension_insurance = ?, health_insurance = ?
         WHERE id = """;
 
-    final Invoice originalInvoice = getById(id).get();
-    final List<Integer> originalCompaniesId =
-        List.of(originalInvoice.getBuyer().getId(),
-            originalInvoice.getSeller().getId());
-
     if (getById(id).isPresent()) {
+      final Invoice originalInvoice = getById(id).get();
+      final List<Integer> originalCompaniesId =
+          List.of(originalInvoice.getBuyer().getId(),
+              originalInvoice.getSeller().getId());
+
       updateInvoice.setId(id);
       int buyerId = originalCompaniesId.get(0);
       int sellerId = originalCompaniesId.get(1);
