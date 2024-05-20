@@ -7,48 +7,53 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.WithId;
 
 @Slf4j
-public class InMemoryDatabase implements Database {
+public class InMemoryDatabase<T extends WithId> implements Database<T> {
 
-  private final Map<Integer, Invoice> invoices = new HashMap<>();
+  private final Map<Integer, T> items = new HashMap<>();
   private int nextId = 1;
 
   @Override
-  public int save(Invoice invoice) {
-    invoice.setId(nextId);
-    invoices.put(nextId, invoice);
-    log.info("Invoice: {} successful saved in database", invoice);
+  public int save(T item) {
+    item.setId(nextId);
+    items.put(nextId, item);
+    String objectName = item.getClass().getSimpleName();
+    log.debug("{} with id: {} successful saved in database", objectName, nextId);
     return nextId++;
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
-    return Optional.ofNullable(invoices.get(id));
+  public Optional<T> getById(int id) {
+    return Optional.ofNullable(items.get(id));
   }
 
   @Override
-  public void update(int id, Invoice updateInvoice) {
-    if (invoices.containsKey(id)) {
-      updateInvoice.setId(id);
-      invoices.put(id, updateInvoice);
-      log.info("Invoice with id: {} successful updated", id);
+  public void update(int id, T updateItem) {
+    if (items.containsKey(id)) {
+      updateItem.setId(id);
+      items.put(id, updateItem);
+      String objectName = updateItem.getClass().getSimpleName();
+      log.debug("{} with id: {} successful updated", objectName, id);
     }
-    log.info("No invoice with the specified id: {} in database", id);
+    String objectName = updateItem.getClass().getSimpleName();
+    log.debug("No {} with the specified id: {} in database", objectName, id);
   }
 
   @Override
   public void delete(int id) {
-    if (invoices.containsKey(id)) {
-      invoices.remove(id);
-      log.info("Invoice with id: {} successful deleted", id);
+    if (items.containsKey(id)) {
+      items.remove(id);
+      String objectName = items.values().getClass().getSimpleName();
+      log.debug("{} with id: {} successful deleted", objectName, id);
     }
-    log.info("No invoice with the specified id: {} in database", id);
+    String objectName = items.values().getClass().getSimpleName();
+    log.debug("No {} with the specified id: {} in database", objectName, id);
   }
 
   @Override
-  public List<Invoice> getAll() {
-    return new ArrayList<>(invoices.values());
+  public List<T> getAll() {
+    return new ArrayList<>(items.values());
   }
 }

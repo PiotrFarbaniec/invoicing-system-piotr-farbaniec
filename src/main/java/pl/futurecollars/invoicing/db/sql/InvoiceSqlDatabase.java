@@ -22,7 +22,7 @@ import pl.futurecollars.invoicing.model.Vat;
 
 @Slf4j
 @AllArgsConstructor
-public class SqlDatabase implements Database {
+public class InvoiceSqlDatabase implements Database<Invoice> {
 
   private final JdbcTemplate jdbcTemplate;
   private final Map<Vat, Integer> vatToId = new HashMap<>();

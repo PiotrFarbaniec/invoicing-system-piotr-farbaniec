@@ -30,7 +30,7 @@ class SqlDatabaseTest extends Specification {
         flyway.clean()
         flyway.migrate()
 
-        database = new SqlDatabase(jdbcTemplate)
+        database = new InvoiceSqlDatabase(jdbcTemplate)
         database.initlizeVatMap()
     }
 
