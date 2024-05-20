@@ -84,7 +84,7 @@ public class CompanySqlDatabase implements Database<Company> {
         ps.setString(3, updateCompany.getName());
         ps.setBigDecimal(4, updateCompany.getPensionInsurance());
         ps.setBigDecimal(5, updateCompany.getHealthInsurance());
-         ps.setInt(6, originalId);
+        ps.setInt(6, originalId);
       });
     }
   }

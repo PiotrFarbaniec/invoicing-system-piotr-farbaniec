@@ -21,6 +21,6 @@ logging:
 
 spring:
   profiles:
-    active: sql
+    active: jpa
   flyway:
     enabled: false
