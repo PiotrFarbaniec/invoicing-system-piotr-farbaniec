@@ -53,7 +53,6 @@ public class FileBasedDatabase<T extends WithId> implements Database<T> {
       item.setId(nextId);
       fileService.appendLineToFile(itemPath, jsonService.toJson(item));
     } catch (IOException e) {
-      log.error("Recording an invoice: {} to the database failed with exception {}", jsonService.toJson(item), e.getMessage(), e);
       throw new RuntimeException(e);
     }
     log.info("Invoice: {} successful saved in database", jsonService.toJson(item));
@@ -74,7 +73,6 @@ public class FileBasedDatabase<T extends WithId> implements Database<T> {
         }
       }
     } catch (IOException e) {
-      log.error("Reading invoice file: {} failed with exception {}", itemPath.getFileName(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
     log.debug("Object with the specified id: {} was not found in the database", id);
@@ -90,7 +88,6 @@ public class FileBasedDatabase<T extends WithId> implements Database<T> {
           .map(line -> jsonService.toObject(line, clazz))
           .collect(Collectors.toList());
     } catch (IOException e) {
-      log.error("Reading {} file: {} failed with exception {}", objectType, itemPath.getFileName(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
   }
@@ -114,7 +111,6 @@ public class FileBasedDatabase<T extends WithId> implements Database<T> {
       fileService.writeLinesToFile(itemPath, updatedLines);
       log.info("{} updating operation completed", objectType);
     } catch (IOException e) {
-      log.error("Writing/reading file: {} while updating failed with exception {}", itemPath.getFileName(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
     manager.deleteBackupFile(itemPath);
@@ -136,7 +132,6 @@ public class FileBasedDatabase<T extends WithId> implements Database<T> {
       saveInvoicesToFile(itemsMap.values());
       log.info("Invoice deleting operation completed");
     } catch (IOException e) {
-      log.error("Writing/reading file: {} while deleting invoice {} failed with exception {}", itemPath.getFileName(), id, e.getMessage(), e);
       throw new RuntimeException(e);
     }
     manager.deleteBackupFile(itemPath);

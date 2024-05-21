@@ -21,7 +21,7 @@ import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
-@IfProfileValue(name = "spring.profile.active", values = ["mongo"])
+//@IfProfileValue(name = "spring.profile.active", values = ["mongo"])
 class MongoBasedDatabaseTest extends Specification {
 
     MongodExecutable mongoDbExecutable

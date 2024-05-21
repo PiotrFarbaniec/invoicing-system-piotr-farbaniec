@@ -1,9 +1,12 @@
 package pl.futurecollars.invoicing.db.sql;
 
 import java.sql.PreparedStatement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,12 +14,22 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Company;
+import pl.futurecollars.invoicing.model.Vat;
 
 @Slf4j
 @AllArgsConstructor
 public class CompanySqlDatabase implements Database<Company> {
 
   private final JdbcTemplate jdbcTemplate;
+
+  private final Map<Vat, Integer> vatToId = new HashMap<>();
+
+  @PostConstruct
+  void initlizeVatMap() {
+    jdbcTemplate.query("SELECT * FROM public.vat;", resultSet -> {
+      vatToId.put(Vat.valueOf(Vat.class, resultSet.getString("name")), resultSet.getInt("id"));
+    });
+  }
 
   @Override
   public int save(Company company) {

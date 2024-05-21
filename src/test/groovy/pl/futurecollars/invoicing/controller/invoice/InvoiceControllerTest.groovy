@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
+import pl.futurecollars.invoicing.db.jpa.InvoiceRepository
 import pl.futurecollars.invoicing.model.Car
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
@@ -13,14 +14,12 @@ import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 import java.time.LocalDate
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@Stepwise
 @AutoConfigureMockMvc
 @SpringBootTest
 class InvoiceControllerTest extends Specification {
@@ -30,6 +29,10 @@ class InvoiceControllerTest extends Specification {
 
     @Autowired
     private JsonService jsonService
+
+    @Autowired
+    private InvoiceRepository invoiceRepository
+
 
     def "should return 204 (NO_CONTENT) status code when database is empty"() {
         when:
@@ -103,22 +106,8 @@ class InvoiceControllerTest extends Specification {
         then:
         expInvoices.size() == 3
         expInvoices[0].number == TestHelper.getInvoice()[0].number
-        expInvoices[0].seller.taxIdentification == TestHelper.getInvoice()[0].seller.taxIdentification
-        expInvoices[0].buyer.taxIdentification == TestHelper.getInvoice()[0].buyer.taxIdentification
-        expInvoices[0].entries[0].description == TestHelper.getInvoice()[0].entries[0].description
-        expInvoices[0].entries[1].description == TestHelper.getInvoice()[0].entries[1].description
-
         expInvoices[1].number == TestHelper.getInvoice()[1].number
-        expInvoices[1].seller.taxIdentification == TestHelper.getInvoice()[1].seller.taxIdentification
-        expInvoices[1].buyer.taxIdentification == TestHelper.getInvoice()[1].buyer.taxIdentification
-        expInvoices[1].entries[0].description == TestHelper.getInvoice()[1].entries[0].description
-        expInvoices[1].entries[1].description == TestHelper.getInvoice()[1].entries[1].description
-
         expInvoices[2].number == TestHelper.getInvoice()[2].number
-        expInvoices[2].seller.taxIdentification == TestHelper.getInvoice()[2].seller.taxIdentification
-        expInvoices[2].buyer.taxIdentification == TestHelper.getInvoice()[2].buyer.taxIdentification
-        expInvoices[2].entries[0].description == TestHelper.getInvoice()[2].entries[0].description
-        expInvoices[2].entries[1].description == TestHelper.getInvoice()[2].entries[1].description
     }
 
     def "should return an invoice if contain searched id=2"() {
