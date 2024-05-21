@@ -9,12 +9,12 @@ import spock.lang.Specification
 @SpringBootTest(classes = MongoBasedDatabaseConfiguration.class)
 @ActiveProfiles("mongo")
 class MongoBasedDatabaseConfigurationTest extends Specification {
-//
-//    @Autowired
-//    MongoDatabase mongoDB
-//
-//    def "should create MongoDatabase bean"() {
-//        expect:
-//        mongoDB != null
-//    }
+
+    @Autowired
+    MongoDatabase mongoDB
+
+    def "should create MongoDatabase bean"() {
+        expect:
+        mongoDB != null
+    }
 }

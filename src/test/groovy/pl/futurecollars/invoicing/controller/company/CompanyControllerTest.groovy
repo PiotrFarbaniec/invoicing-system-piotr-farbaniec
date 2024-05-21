@@ -1,5 +1,7 @@
 package pl.futurecollars.invoicing.controller.company
 
+import com.mongodb.MongoClient
+import org.bson.Document
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -28,9 +30,6 @@ class CompanyControllerTest extends Specification {
     @Autowired
     private JsonService jsonService
 
-    @Autowired
-    private CompanyRepository companyRepository
-
 
     def "should return 204 (NO_CONTENT) status code when no companies in database"() {
         when:
@@ -43,7 +42,6 @@ class CompanyControllerTest extends Specification {
         then:
         expResponse == "[]"
     }
-
 
     def "should add single company to database"() {
         given:

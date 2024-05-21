@@ -1,11 +1,16 @@
 package pl.futurecollars.invoicing.controller.invoice
 
+import com.mongodb.MongoClient
+import com.mongodb.client.MongoDatabase
+import io.swagger.models.auth.In
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.ApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
+import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.jpa.InvoiceRepository
 import pl.futurecollars.invoicing.model.Car
 import pl.futurecollars.invoicing.model.Company
@@ -13,7 +18,9 @@ import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
 import pl.futurecollars.invoicing.utils.JsonService
+import spock.lang.Requires
 import spock.lang.Specification
+import spock.lang.Stepwise
 
 import java.time.LocalDate
 
@@ -22,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
+@Stepwise
 class InvoiceControllerTest extends Specification {
 
     @Autowired
@@ -31,8 +39,18 @@ class InvoiceControllerTest extends Specification {
     private JsonService jsonService
 
     @Autowired
-    private InvoiceRepository invoiceRepository
+    private Database<Invoice> database
 
+    def "database is dropped to ensure clean state"(){
+        expect:
+        database != null
+
+        when:
+        database.reset()
+
+        then:
+        database.getAll().size == 0
+    }
 
     def "should return 204 (NO_CONTENT) status code when database is empty"() {
         when:
