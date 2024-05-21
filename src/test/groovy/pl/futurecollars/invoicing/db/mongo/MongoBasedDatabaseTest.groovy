@@ -16,12 +16,14 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoClients
-import org.springframework.test.annotation.IfProfileValue
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
-@IfProfileValue(name = "spring.profile.active", values = ["mongo"])
+@SpringBootTest(classes = MongoBasedDatabaseConfiguration.class)
+@ActiveProfiles("mongo")
 class MongoBasedDatabaseTest extends Specification {
 
     MongodExecutable mongoDbExecutable

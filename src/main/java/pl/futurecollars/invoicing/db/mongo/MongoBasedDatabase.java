@@ -8,45 +8,45 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.AllArgsConstructor;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.WithId;
 
 @AllArgsConstructor
-public class MongoBasedDatabase implements Database {
+public class MongoBasedDatabase<T extends WithId> implements Database<T> {
 
-  private MongoCollection<Invoice> invoiceCollection;
+  private MongoCollection<T> invoiceCollection;
   private MongoIdProvider idProvider;
 
   @Override
-  public int save(Invoice invoice) {
-    invoice.setId(idProvider.getNextIdAndIncrement().intValue());
-    invoiceCollection.insertOne(invoice);
-    return invoice.getId();
+  public int save(T item) {
+    item.setId(idProvider.getNextIdAndIncrement().intValue());
+    invoiceCollection.insertOne(item);
+    return item.getId();
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
+  public Optional<T> getById(int id) {
     return Optional.ofNullable(invoiceCollection.find(Filters.eq("_id", id)).first());
   }
 
   @Override
-  public List<Invoice> getAll() {
+  public List<T> getAll() {
     return StreamSupport
         .stream(invoiceCollection.find().spliterator(), false)
         .collect(Collectors.toList());
   }
 
   @Override
-  public void update(int id, Invoice updateInvoice) {
+  public void update(int id, T updateItem) {
     if (getById(id).isPresent()) {
-      updateInvoice.setId(id);
-      invoiceCollection.findOneAndReplace(Filters.eq("_id", id), updateInvoice);
+      updateItem.setId(id);
+      invoiceCollection.findOneAndReplace(Filters.eq("_id", id), updateItem);
     }
   }
 
   @Override
   public void delete(int id) {
-    Optional<Invoice> removedInvoice = getById(id);
-    if (removedInvoice.isPresent()) {
+    Optional<T> removedItem = getById(id);
+    if (removedItem.isPresent()) {
       invoiceCollection.deleteOne(Filters.eq("_id", id));
     }
   }

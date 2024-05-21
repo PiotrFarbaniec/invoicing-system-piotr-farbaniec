@@ -8,15 +8,16 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
 import pl.futurecollars.invoicing.db.Database
+import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
 import javax.sql.DataSource
 import java.time.LocalDate
 
 @IfProfileValue(name = "spring.profile.active", values = ["sql"])
-class SqlDatabaseTest extends Specification {
+class InvoiceSqlDatabaseTest extends Specification {
 
-    private Database database
+    private Database<Invoice> database
 
     void setup() {
         DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build()
@@ -30,7 +31,7 @@ class SqlDatabaseTest extends Specification {
         flyway.clean()
         flyway.migrate()
 
-        database = new SqlDatabase(jdbcTemplate)
+        database = new InvoiceSqlDatabase(jdbcTemplate)
         database.initlizeVatMap()
     }
 

@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
@@ -15,18 +16,28 @@ import pl.futurecollars.invoicing.model.Vat;
 @Service
 public class TaxCalculatorService {
 
-  private final Database database;
+  private final Database<Invoice> database;
 
-  public TaxCalculatorService(Database database) {
+  public TaxCalculatorService(Database<Invoice> database) {
     this.database = database;
   }
 
+  // ===============PRZENIESIONO Z INTERFEJSU DATABASE=============================
+  private BigDecimal visit(Predicate<Invoice> invoicePredicate, Function<InvoiceEntry, BigDecimal> invoiceEntryToValue) {
+    return database.getAll().stream()
+        .filter(invoicePredicate)
+        .flatMap(invoice -> invoice.getEntries().stream())
+        .map(invoiceEntryToValue)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+  // ===============================================================================
+
   public BigDecimal getIncome(String taxIdNumber) {
-    return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getNetPrice);
+    return visit(sellerPredicate(taxIdNumber), InvoiceEntry::getNetPrice);
   }
 
   public BigDecimal getCosts(String taxIdNumber) {
-    return database.visit(buyerPredicate(taxIdNumber), this::getIncomeValueTakingIntoConsiderationPersonalCarUse);
+    return visit(buyerPredicate(taxIdNumber), this::getIncomeValueTakingIntoConsiderationPersonalCarUse);
   }
 
   private BigDecimal getIncomeValueTakingIntoConsiderationPersonalCarUse(InvoiceEntry invoiceEntry) {
@@ -41,12 +52,12 @@ public class TaxCalculatorService {
   }
 
   public BigDecimal getCollectedVat(String taxIdNumber) {
-    return database.visit(sellerPredicate(taxIdNumber), InvoiceEntry::getVatValue)
+    return visit(sellerPredicate(taxIdNumber), InvoiceEntry::getVatValue)
         .setScale(2, RoundingMode.HALF_DOWN);
   }
 
   public BigDecimal getPaidVat(String taxIdNumber) {
-    return database.visit(buyerPredicate(taxIdNumber), this::getVatValueTakingIntoConsiderationPersonalCarUse);
+    return visit(buyerPredicate(taxIdNumber), this::getVatValueTakingIntoConsiderationPersonalCarUse);
   }
 
   private BigDecimal getVatValueTakingIntoConsiderationPersonalCarUse(InvoiceEntry invoiceEntry) {

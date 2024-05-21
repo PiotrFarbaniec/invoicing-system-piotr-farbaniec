@@ -14,132 +14,133 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.WithId;
 import pl.futurecollars.invoicing.utils.FileManager;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
 @Slf4j
-public class FileBasedDatabase implements Database {
+public class FileBasedDatabase<T extends WithId> implements Database<T> {
 
   private final FileManager manager;
   private final FileService fileService;
   private final JsonService jsonService;
   private final IdService idService;
-  private final Path invoicePath;
+  private final Path itemPath;
+  private final Class<T> clazz;
 
   public FileBasedDatabase(FileManager manager, FileService fileService,
                            JsonService jsonService, IdService idService,
-                           Path invoicePath) {
+                           Path itemPath, Class<T> clazz) {
     this.manager = manager;
     this.fileService = fileService;
     this.jsonService = jsonService;
     this.idService = idService;
-    this.invoicePath = invoicePath;
+    this.itemPath = itemPath;
+    this.clazz = clazz;
   }
 
   @Override
-  public int save(Invoice invoice) {
-    log.debug("Saving invoice: {}", jsonService.toJson(invoice));
-    File invFile = new File(invoicePath.toString());
+  public int save(T item) {
+    log.debug("Saving invoice: {}", jsonService.toJson(item));
+    File invFile = new File(itemPath.toString());
     int nextId = idService.getNextIdAndIncrement();
     try {
       if (!invFile.exists()) {
         invFile.createNewFile();
-        log.debug("The invoice file: {} was successfully created", invoicePath.getFileName());
+        log.debug("The file: {} was successfully created", itemPath.getFileName());
       }
-      invoice.setId(nextId);
-      fileService.appendLineToFile(invoicePath, jsonService.toJson(invoice));
+      item.setId(nextId);
+      fileService.appendLineToFile(itemPath, jsonService.toJson(item));
     } catch (IOException e) {
-      log.error("Recording an invoice: {} to the database failed with exception {}", jsonService.toJson(invoice), e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    log.info("Invoice: {} successful saved in database", jsonService.toJson(invoice));
+    log.info("Invoice: {} successful saved in database", jsonService.toJson(item));
     return nextId;
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
-    log.debug("Searching an invoice by id: {}", id);
+  public Optional<T> getById(int id) {
+    log.debug("Searching by id: {}", id);
     try {
-      List<String> lines = fileService.readAllLines(invoicePath);
+      List<String> lines = fileService.readAllLines(itemPath);
       for (String line : lines) {
-        Invoice invoice = jsonService.toObject(line, Invoice.class);
-        if (invoice.getId() == id) {
-          log.info("The invoice with id: {} has been found", id);
-          return Optional.of(invoice);
+        T item = jsonService.toObject(line, clazz);
+        if (item.getId() == id) {
+          String objectType = item.getClass().getSimpleName();
+          log.debug("The {} with id: {} has been found", objectType, id);
+          return Optional.of(item);
         }
       }
     } catch (IOException e) {
-      log.error("Reading invoice file: {} failed with exception {}", invoicePath.getFileName(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    log.debug("Invoice with the specified id: {} was not found in the database", id);
+    log.debug("Object with the specified id: {} was not found in the database", id);
     return Optional.empty();
   }
 
   @Override
-  public List<Invoice> getAll() {
-    log.debug("Reading all invoices from file: {}", invoicePath.getFileName());
+  public List<T> getAll() {
+    String objectType = clazz.getSimpleName();
+    log.debug("Reading all {} from file: {}", objectType, itemPath.getFileName());
     try {
-      return fileService.readAllLines(invoicePath).stream()
-          .map(line -> jsonService.toObject(line, Invoice.class))
+      return fileService.readAllLines(itemPath).stream()
+          .map(line -> jsonService.toObject(line, clazz))
           .collect(Collectors.toList());
     } catch (IOException e) {
-      log.error("Reading invoice file: {} failed with exception {}", invoicePath.getFileName(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
   }
 
-  public void update(int id, Invoice updatedInvoice) {
-    log.debug("Updating an invoice with id: {}", id);
-    manager.makeBackupFile(invoicePath);
+  public void update(int id, T updateItem) {
+    String objectType = clazz.getSimpleName();
+    log.debug("Updating of {} with id: {}", objectType, id);
+    manager.makeBackupFile(itemPath);
     try {
-      List<String> lines = fileService.readAllLines(invoicePath);
+      List<String> lines = fileService.readAllLines(itemPath);
       List<String> updatedLines = new ArrayList<>();
       for (String line : lines) {
         if (isContainId(line, id)) {
-          updatedInvoice.setId(id);
-          String updatedLine = jsonService.toJson(updatedInvoice);
+          updateItem.setId(id);
+          String updatedLine = jsonService.toJson(updateItem);
           updatedLines.add(updatedLine);
         } else {
           updatedLines.add(line);
         }
       }
-      fileService.writeLinesToFile(invoicePath, updatedLines);
-      log.info("Invoice updating operation completed");
+      fileService.writeLinesToFile(itemPath, updatedLines);
+      log.info("{} updating operation completed", objectType);
     } catch (IOException e) {
-      log.error("Writing/reading file: {} while updating failed with exception {}", invoicePath.getFileName(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    manager.deleteBackupFile(invoicePath);
+    manager.deleteBackupFile(itemPath);
   }
 
   @Override
   public void delete(int id) {
-    log.debug("Deleting an invoice with id: {}", id);
-    Map<Integer, Invoice> invoices = new HashMap<>();
-    manager.makeBackupFile(invoicePath);
+    String objectType = clazz.getSimpleName();
+    log.debug("Deleting of {} with id: {}", objectType, id);
+    Map<Integer, T> itemsMap = new HashMap<>();
+    manager.makeBackupFile(itemPath);
     try {
-      List<String> invoicesList = fileService.readAllLines(invoicePath);
+      List<String> invoicesList = fileService.readAllLines(itemPath);
       for (String invoiceString : invoicesList) {
-        Invoice invoice = jsonService.toObject(invoiceString, Invoice.class);
-        invoices.put(invoice.getId(), invoice);
+        T item = jsonService.toObject(invoiceString, clazz);
+        itemsMap.put(item.getId(), item);
       }
-      invoices.remove(id);
-      saveInvoicesToFile(invoices.values());
+      itemsMap.remove(id);
+      saveInvoicesToFile(itemsMap.values());
       log.info("Invoice deleting operation completed");
     } catch (IOException e) {
-      log.error("Writing/reading file: {} while deleting invoice {} failed with exception {}", invoicePath.getFileName(), id, e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    manager.deleteBackupFile(invoicePath);
+    manager.deleteBackupFile(itemPath);
   }
 
-  private void saveInvoicesToFile(Collection<Invoice> invoices) throws IOException {
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(invoicePath.toFile()))) {
-      for (Invoice invoice : invoices) {
-        String invoiceString = jsonService.toJson(invoice);
+  private void saveInvoicesToFile(Collection<T> items) throws IOException {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(itemPath.toFile()))) {
+      for (T item : items) {
+        String invoiceString = jsonService.toJson(item);
         writer.write(invoiceString);
         writer.newLine();
       }

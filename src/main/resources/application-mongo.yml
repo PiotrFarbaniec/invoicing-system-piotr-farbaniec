@@ -1,5 +1,7 @@
 invoicing-system:
   database: mongo
   database.database-name: invoicing
-  database.collection-name: invoices
-  database.counter-name: counter
+  database.invoice-collection-name: invoices
+  database.invoice-counter-name: invoice_counter
+  database.company-collection-name: companies
+  database.company-counter-name: company_counter
