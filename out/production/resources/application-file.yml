@@ -1,0 +1,14 @@
+server:
+  port: 8200
+
+invoicing-system:
+  database: file
+  database.directory: db
+  database.invoices.file: INVOICES.txt
+  database.id.file: ID.txt
+
+logging:
+  level:
+    pl:
+      futurecollars:
+        invoicing: INFO

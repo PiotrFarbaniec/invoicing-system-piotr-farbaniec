@@ -1,0 +1,11 @@
+server:
+  port: 8100
+
+invoicing-system:
+  database: memory
+
+logging:
+  level:
+    pl:
+      futurecollars:
+        invoicing: INFO
