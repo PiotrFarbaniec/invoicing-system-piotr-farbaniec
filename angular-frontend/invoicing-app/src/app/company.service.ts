@@ -4,24 +4,24 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { Company } from './company'
 
-const PATH = 'companies';
+const PATH = '/companies';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 
 export class CompanyService {
-  constructor(private http: HttpClient) { }
 
   private contentType = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  };
+  }
 
   private apiUrl(service: string, id: number = 0): string {
-    const idInUrl = id !== 0 ? '/' + id : '';
-
+    const idInUrl = (id !== 0 ? '/' + id : '');
     return environment.apiUrl + '/' + service + idInUrl;
   }
+
+  constructor(private http: HttpClient) { }
 
   private companyRequest(company: Company) {
     return {
@@ -34,28 +34,33 @@ export class CompanyService {
   }
 
   getCompanies(): Observable<Company[]> {
-    return this.http.get<Company[]>(this.apiUrl(PATH));
+    return this.http.get<Company[]>(this.apiUrl(PATH + '/get/all'));
   }
 
   addCompany(company: Company): Observable<any> {
+    const options = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+      responseType: 'text' as 'json'
+    };
     return this.http.post<any>(
-      this.apiUrl(PATH),
+      this.apiUrl(PATH + '/add/'),
       this.companyRequest(company),
-      this.contentType
+      options
     );
   }
 
-  editingCompany(company: Company): Observable<any> {
-    return this.http.put<Company>(
-      this.apiUrl(PATH, company.id),
+  editingCompany(company: Company): Observable<string> {
+    return this.http.put<string>(
+      this.apiUrl(PATH + '/update/', company.id),
       this.companyRequest(company),
-      this.contentType
-    );
+      { ...this.contentType, responseType: 'text' as 'json' });
   }
 
-  deleteCompany(id: number): Observable<any> {
-    return this.http.delete<any>(this.apiUrl(PATH, id));
+  deleteCompany(id: number): Observable<string> {
+    return this.http.delete<string>(this.apiUrl(PATH + '/delete/', id),
+          { responseType: 'text' as 'json' });
   }
+
 }
-
-

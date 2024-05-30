@@ -88,9 +88,9 @@ class CompanyControllerTest extends Specification {
                 .contentAsString
 
         then:
-        firstAdded == "Company with ID: 1 has been successfully saved"
-        secondAdded == "Company with ID: 2 has been successfully saved"
-        thirdAdded == "Company with ID: 3 has been successfully saved"
+        firstAdded ==  "1"
+        secondAdded == "2"
+        thirdAdded ==  "3"
     }
 
 
