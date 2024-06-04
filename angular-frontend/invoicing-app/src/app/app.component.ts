@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   }
 
   addCompany() {
-    this.companyService.addCompany(this.newCompany).subscribe((id) => {
+    this.companyService.addCompanies(this.newCompany).subscribe((id) => {
       this.newCompany.id = id;
       this.companies.push(this.newCompany);
       this.newCompany = new Company(0, "", "", "", 0, 0);
