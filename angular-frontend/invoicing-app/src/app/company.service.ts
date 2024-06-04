@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { Company } from './company'
 
-const PATH = '/companies';
+const PATH = 'companies';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,14 @@ export class CompanyService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   }
 
-  private apiUrl(service: string, id: number = 0): string {
-    const idInUrl = (id !== 0 ? '/' + id : '');
-    return environment.apiUrl + '/' + service + idInUrl;
+//   private apiUrl(service: string, id: number | null = null): string {
+//     const idInUrl = (id !== null ? '/' + id : '');
+//     return environment.apiUrl + '/' + service + idInUrl;
+//   }
+
+  private apiUrl(service: string, id: number | null = null): string {
+    const idInUrl = (id !== null && id !== 0) ? `/${id}` : '';
+    return `${environment.apiUrl}/${service}${idInUrl}`;
   }
 
   constructor(private http: HttpClient) { }
@@ -37,7 +42,7 @@ export class CompanyService {
     return this.http.get<Company[]>(this.apiUrl(PATH + '/get/all'));
   }
 
-  addCompany(company: Company): Observable<any> {
+  addCompanies(company: Company): Observable<any> {
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
