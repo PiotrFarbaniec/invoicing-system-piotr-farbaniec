@@ -34,17 +34,25 @@ function handleAddCompanyFormSubmit() {
     form.on('submit', function (e){
         e.preventDefault();
 
+        const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            .split('=')[1];
+
         $.ajax({
             url: '/companies/add/',
             type: 'post',
             contentType: 'application/json',
             data: serializeFormToJson(this),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-XSRF-TOKEN', csrfToken);
+            },
             success: function (data) {
-//                alert(data)
+                $("#companiesTable").find("tr:gt(0)").remove();
                 loadCompanies()
             },
             error: function (jqXhr, textStatus, errorThrown) {
-                alert(errorThrown)
+                alert(jqXhr.status + " " + errorThrown)
             }
         });
     });
