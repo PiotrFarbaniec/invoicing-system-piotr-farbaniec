@@ -1,15 +1,12 @@
 package pl.futurecollars.invoicing.controller.company
 
-import com.mongodb.MongoClient
-import org.bson.Document
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.Repository
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
-import pl.futurecollars.invoicing.db.jpa.CompanyRepository
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
@@ -19,7 +16,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 
+@WithMockUser
 @AutoConfigureMockMvc
 @SpringBootTest
 class CompanyControllerTest extends Specification {
@@ -33,7 +32,7 @@ class CompanyControllerTest extends Specification {
 
     def "should return 204 (NO_CONTENT) status code when no companies in database"() {
         when:
-        def expResponse = mvc.perform(get("/companies/get/all"))
+        def expResponse = mvc.perform(get("/companies/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -58,7 +57,7 @@ class CompanyControllerTest extends Specification {
 
         when:
         def firstAdded = mvc.perform(
-                post("/companies/add/")
+                post("/companies/add/").with(csrf())
                         .content(firstAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
@@ -68,7 +67,7 @@ class CompanyControllerTest extends Specification {
                 .contentAsString
 
         def secondAdded = mvc.perform(
-                post("/companies/add/")
+                post("/companies/add/").with(csrf())
                         .content(secondAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
@@ -78,7 +77,7 @@ class CompanyControllerTest extends Specification {
                 .contentAsString
 
         def thirdAdded = mvc.perform(
-                post("/companies/add/")
+                post("/companies/add/").with(csrf())
                         .content(thirdAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
@@ -101,7 +100,7 @@ class CompanyControllerTest extends Specification {
         def thirdCompany = TestHelper.getInvoice()[1].seller
 
         when:
-        def response = mvc.perform(get("/companies/get/all"))
+        def response = mvc.perform(get("/companies/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -119,7 +118,7 @@ class CompanyControllerTest extends Specification {
         def secondCompany = TestHelper.getInvoice()[0].buyer
 
         when:
-        def response = mvc.perform(get("/companies/get/2"))
+        def response = mvc.perform(get("/companies/get/2").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -137,7 +136,7 @@ class CompanyControllerTest extends Specification {
 
     def "should return nothing if company with specific id not exists"() {
         when:
-        def response = mvc.perform(get("/companies/get/5"))
+        def response = mvc.perform(get("/companies/get/5").with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .response
@@ -160,7 +159,7 @@ class CompanyControllerTest extends Specification {
         def updatedAsJson = jsonService.toJson(updateCompany)
 
         when:
-        def response = mvc.perform(put("/companies/update/5")
+        def response = mvc.perform(put("/companies/update/5").with(csrf())
                 .content(updatedAsJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
@@ -186,7 +185,7 @@ class CompanyControllerTest extends Specification {
         def updatedAsJson = jsonService.toJson(updateCompany)
 
         expect:
-        def response = mvc.perform(put("/companies/update/1")
+        def response = mvc.perform(put("/companies/update/1").with(csrf())
                 .content(updatedAsJson)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -194,7 +193,7 @@ class CompanyControllerTest extends Specification {
                 .response
                 .contentAsString
 
-        def updateResult = mvc.perform(get("/companies/get/all"))
+        def updateResult = mvc.perform(get("/companies/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -219,13 +218,13 @@ class CompanyControllerTest extends Specification {
 
     def "should delete company with specific id if exists"() {
         when:
-        def response = mvc.perform(delete("/companies/delete/1"))
+        def response = mvc.perform(delete("/companies/delete/1").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def result = mvc.perform(get("/companies/get/all"))
+        def result = mvc.perform(get("/companies/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -241,13 +240,13 @@ class CompanyControllerTest extends Specification {
 
     def "should not delete if company with specific id does not exist"() {
         when:
-        def response = mvc.perform(delete("/companies/delete/1"))
+        def response = mvc.perform(delete("/companies/delete/1").with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def result = mvc.perform(get("/companies/get/all"))
+        def result = mvc.perform(get("/companies/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -259,7 +258,5 @@ class CompanyControllerTest extends Specification {
         response == ""
         expCompanies.size() == 2
 
-//        cleanupSpec:
-//            companyRepository.deleteAll()
     }
 }

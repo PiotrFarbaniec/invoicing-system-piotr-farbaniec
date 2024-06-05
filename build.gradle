@@ -22,6 +22,7 @@ buildscript {
         flywayVersion = '7.6.0'
         mongoVersion = '3.12.11'
         mongoDriverVersion = '4.0.5'
+        flapdoodleVersion = '2.2.0'
     }
 }
 
@@ -75,7 +76,7 @@ dependencies {
     testImplementation "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
 
     // Flapdoodle Embedded MongoDB
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
+    testImplementation "de.flapdoodle.embed:de.flapdoodle.embed.mongo:${flapdoodleVersion}"
 
     //Spring framework
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -101,6 +102,10 @@ dependencies {
 
     //Spring Data MongoDB
     implementation 'org.springframework.data:spring-data-mongodb'
+
+    //Spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
 }
 
 java {

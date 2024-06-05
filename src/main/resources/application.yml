@@ -24,3 +24,7 @@ spring:
     active: sql
   flyway:
     enabled: false
+  security:
+    user:
+      name: piotr
+      password: piotr123
