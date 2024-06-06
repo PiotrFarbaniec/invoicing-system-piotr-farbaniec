@@ -9,6 +9,11 @@ invoicing-system:
   database.invoice_id.file: INVOICE_ID.txt
   database.company_id.file: COMPANY_ID.txt
 
+  allowedOrigins: http://localhost:4200
+  csrf:
+    disable: false
+
+
 logging:
   level:
     pl:
