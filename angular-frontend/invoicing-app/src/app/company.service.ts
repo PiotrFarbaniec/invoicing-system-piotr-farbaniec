@@ -56,5 +56,4 @@ export class CompanyService {
     return this.http.delete<any>(this.apiUrl(PATH + '/delete', id),
           { ...this.options, responseType: 'text' as 'json' });
   }
-
 }

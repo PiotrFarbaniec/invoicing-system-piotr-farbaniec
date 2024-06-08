@@ -16,7 +16,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private CorsFilter corsFilter;
 
-  @Value("${invoicing-system.csrf.disable: false}")
+  @Value("${invoicing-system.csrf.disable:false}")
   private boolean disableCsrf;
 
   @Override
@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     if (disableCsrf) {
       http.csrf().disable();
     } else {
-     http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+      http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
     }
   }
 }

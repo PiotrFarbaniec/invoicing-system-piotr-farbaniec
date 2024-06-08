@@ -2,16 +2,9 @@ server:
   port: 7000
 
 invoicing-system:
-  database: file
-  database.directory: db
-  database.invoices.file: INVOICES.txt
-  database.companies.file: COMPANIES.txt
-  database.invoice_id.file: INVOICE_ID.txt
-  database.company_id.file: COMPANY_ID.txt
-
   allowedOrigins: http://localhost:4200
   csrf:
-    disable: false
+    disable: true
 
 
 logging:
@@ -26,9 +19,10 @@ logging:
 
 spring:
   profiles:
-    active: sql
+    active: jpa
   flyway:
     enabled: false
+
   security:
     user:
       name: piotr

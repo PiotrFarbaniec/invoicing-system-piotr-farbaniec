@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { CompanyService } from './company.service';
 
 @NgModule({
@@ -13,10 +13,6 @@ import { CompanyService } from './company.service';
     NgbModule,
     FormsModule,
     HttpClientModule,
-    HttpClientXsrfModule.withOptions({
-      cookieName: 'XSRF-TOKEN',
-      headerName: 'X-XSRF-TOKEN'
-    })
   ],
   providers: [CompanyService],
   bootstrap: [AppComponent]
