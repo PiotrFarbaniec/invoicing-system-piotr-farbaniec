@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.model.Company
@@ -11,10 +12,12 @@ import pl.futurecollars.invoicing.service.TaxCalculatorResult
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@WithMockUser
 @AutoConfigureMockMvc
 @SpringBootTest
 class TaxCalculatorControllerTest extends Specification {
@@ -39,7 +42,7 @@ class TaxCalculatorControllerTest extends Specification {
 
         when:
         def expResponse = mvc.perform(
-                post("/tax/company/")
+                post("/tax/company/").with(csrf())
                 .content(companyAsJson)
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -85,18 +88,18 @@ class TaxCalculatorControllerTest extends Specification {
 
         when:
         mvc.perform(
-                post("/invoices/add/")
+                post("/invoices/add/").with(csrf())
                         .content(firstAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
         mvc.perform(
-                post("/invoices/add/")
+                post("/invoices/add/").with(csrf())
                         .content(secondAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
 
         def expResponse = mvc.perform(
-                post("/tax/company/")
+                post("/tax/company/").with(csrf())
                         .content(companyAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )

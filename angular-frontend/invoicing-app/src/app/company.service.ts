@@ -12,14 +12,10 @@ const PATH = 'companies';
 
 export class CompanyService {
 
-  private contentType = {
+  private options = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    withCredentials: true
   }
-
-//   private apiUrl(service: string, id: number | null = null): string {
-//     const idInUrl = (id !== null ? '/' + id : '');
-//     return environment.apiUrl + '/' + service + idInUrl;
-//   }
 
   private apiUrl(service: string, id: number | null = null): string {
     const idInUrl = (id !== null && id !== 0) ? `/${id}` : '';
@@ -43,29 +39,21 @@ export class CompanyService {
   }
 
   addCompanies(company: Company): Observable<any> {
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      }),
-      responseType: 'text' as 'json'
-    };
     return this.http.post<any>(
       this.apiUrl(PATH + '/add/'),
       this.companyRequest(company),
-      options
-    );
+      this.options);
   }
 
-  editingCompany(company: Company): Observable<string> {
-    return this.http.put<string>(
-      this.apiUrl(PATH + '/update/', company.id),
+  editingCompany(company: Company): Observable<any> {
+    return this.http.put<any>(
+      this.apiUrl(PATH + '/update', company.id),
       this.companyRequest(company),
-      { ...this.contentType, responseType: 'text' as 'json' });
+      { ...this.options, responseType: 'text' as 'json' });
   }
 
-  deleteCompany(id: number): Observable<string> {
-    return this.http.delete<string>(this.apiUrl(PATH + '/delete/', id),
-          { responseType: 'text' as 'json' });
+  deleteCompany(id: number): Observable<any> {
+    return this.http.delete<any>(this.apiUrl(PATH + '/delete', id),
+          { ...this.options, responseType: 'text' as 'json' });
   }
-
 }

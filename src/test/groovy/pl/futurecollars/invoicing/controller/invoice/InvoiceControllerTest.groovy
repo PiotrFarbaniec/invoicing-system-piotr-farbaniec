@@ -1,32 +1,29 @@
 package pl.futurecollars.invoicing.controller.invoice
 
-import com.mongodb.MongoClient
-import com.mongodb.client.MongoDatabase
-import io.swagger.models.auth.In
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.ApplicationContext
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.TestHelper
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.db.jpa.InvoiceRepository
 import pl.futurecollars.invoicing.model.Car
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
 import pl.futurecollars.invoicing.utils.JsonService
-import spock.lang.Requires
 import spock.lang.Specification
 import spock.lang.Stepwise
 
 import java.time.LocalDate
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+@WithMockUser
 @AutoConfigureMockMvc
 @SpringBootTest
 @Stepwise
@@ -54,7 +51,7 @@ class InvoiceControllerTest extends Specification {
 
     def "should return 204 (NO_CONTENT) status code when database is empty"() {
         when:
-        def expResponse = mvc.perform(get("/invoices/get/all"))
+        def expResponse = mvc.perform(get("/invoices/get/all").with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .response
@@ -76,7 +73,7 @@ class InvoiceControllerTest extends Specification {
 
         when:
         def firstAdded = mvc.perform(
-                post("/invoices/add/")
+                post("/invoices/add/").with(csrf())
                         .content(firstAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
@@ -86,7 +83,7 @@ class InvoiceControllerTest extends Specification {
                 .contentAsString
 
         def secondAdded = mvc.perform(
-                post("/invoices/add/")
+                post("/invoices/add/").with(csrf())
                         .content(secondAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
@@ -96,7 +93,7 @@ class InvoiceControllerTest extends Specification {
                 .contentAsString
 
         def thirdAdded = mvc.perform(
-                post("/invoices/add/")
+                post("/invoices/add/").with(csrf())
                         .content(thirdAsJson)
                         .contentType(MediaType.APPLICATION_JSON)
         )
@@ -113,7 +110,7 @@ class InvoiceControllerTest extends Specification {
 
     def "should return all invoices when database is not empty"() {
         when:
-        def response = mvc.perform(get("/invoices/get/all"))
+        def response = mvc.perform(get("/invoices/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -130,7 +127,7 @@ class InvoiceControllerTest extends Specification {
 
     def "should return an invoice if contain searched id=2"() {
         when:
-        def response = mvc.perform(get("/invoices/get/2"))
+        def response = mvc.perform(get("/invoices/get/2").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -152,7 +149,7 @@ class InvoiceControllerTest extends Specification {
 
     def "should return nothing if invoice with specific id not exists"() {
         when:
-        def response = mvc.perform(get("/invoices/get/5"))
+        def response = mvc.perform(get("/invoices/get/5").with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .response
@@ -195,7 +192,7 @@ class InvoiceControllerTest extends Specification {
         def updatedAsJson = jsonService.toJson(updatedInvoice)
 
         when:
-        def response = mvc.perform(put("/invoices/update/5")
+        def response = mvc.perform(put("/invoices/update/5").with(csrf())
                 .content(updatedAsJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
@@ -253,7 +250,7 @@ class InvoiceControllerTest extends Specification {
         def updatedAsJson = jsonService.toJson(updatedInvoice)
 
         expect:
-        def response = mvc.perform(put("/invoices/update/1")
+        def response = mvc.perform(put("/invoices/update/1").with(csrf())
                 .content(updatedAsJson)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -261,7 +258,7 @@ class InvoiceControllerTest extends Specification {
                 .response
                 .contentAsString
 
-        def updateResult = mvc.perform(get("/invoices/get/all"))
+        def updateResult = mvc.perform(get("/invoices/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -338,7 +335,7 @@ class InvoiceControllerTest extends Specification {
         def updatedAsJson = jsonService.toJson(updatedInvoice)
 
         expect:
-        def response = mvc.perform(put("/invoices/update/6")
+        def response = mvc.perform(put("/invoices/update/6").with(csrf())
                 .content(updatedAsJson)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent())
@@ -346,7 +343,7 @@ class InvoiceControllerTest extends Specification {
                 .response
                 .contentAsString
 
-        def updateResult = mvc.perform(get("/invoices/get/all"))
+        def updateResult = mvc.perform(get("/invoices/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -366,13 +363,13 @@ class InvoiceControllerTest extends Specification {
 
     def "should delete invoice with specific id if exists"() {
         when:
-        def response = mvc.perform(delete("/invoices/delete/1"))
+        def response = mvc.perform(delete("/invoices/delete/1").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def result = mvc.perform(get("/invoices/get/all"))
+        def result = mvc.perform(get("/invoices/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -393,13 +390,13 @@ class InvoiceControllerTest extends Specification {
 
     def "should not delete if invoice with specific id does not exist"() {
         when:
-        def response = mvc.perform(delete("/invoices/delete/1"))
+        def response = mvc.perform(delete("/invoices/delete/1").with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def result = mvc.perform(get("/invoices/get/all"))
+        def result = mvc.perform(get("/invoices/get/all").with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
