@@ -1,5 +1,5 @@
 const loadCompanies = async () => {
-    const response = await fetch('http://localhost:7000/companies/get/all');
+    const response = await fetch('/companies/get/all');
     const companies = await response.json();
 
     const companiesTable = document.getElementById("companiesTable")

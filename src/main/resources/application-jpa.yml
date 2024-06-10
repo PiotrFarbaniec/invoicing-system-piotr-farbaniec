@@ -1,12 +1,12 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL94Dialect
   datasource:
-    url: jdbc:postgresql://localhost:5432/invoicing-jpa
+    url: jdbc:postgresql://localhost:5432/invoicingjpa
     username: postgres
     password: piotr
     driver-class-name: org.postgresql.Driver
